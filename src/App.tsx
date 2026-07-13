@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { generateTask } from "./lib";
 import {
   AnswerConsole,
@@ -22,23 +22,29 @@ export default function App() {
   const [stats, setStats] = useState<Stats>({ streak: 0, best: 0, solved: 0, total: 0 });
   const [reveal, setReveal] = useState(false);
   const [viz, setViz] = useState(false);
-  const levelRef = useRef<LevelKey>(level);
-  levelRef.current = level;
+  const [taskRequest, setTaskRequest] = useState(0);
 
-  const newTask = useCallback(async (nextLevel: LevelKey) => {
+  const requestNewTask = () => {
     setTask(null);
     setAnswer([]);
     setChecked(false);
     setResult(null);
     setReveal(false);
     setViz(false);
-    const nextTask = await generateTask(nextLevel);
-    if (levelRef.current === nextLevel) setTask(nextTask);
-  }, []);
+    setTaskRequest((request) => request + 1);
+  };
 
   useEffect(() => {
-    void newTask(level);
-  }, [level, newTask]);
+    let cancelled = false;
+
+    generateTask(level).then((nextTask) => {
+      if (!cancelled) setTask(nextTask);
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [level, taskRequest]);
 
   const place = (index: number) => {
     if (!checked) setAnswer((currentAnswer) => [...currentAnswer, index]);
@@ -75,7 +81,14 @@ export default function App() {
     <div className={s.page}>
       <div className={s.wrap}>
         <TrainerHeader stats={stats} />
-        <LevelSelector level={level} onLevelChange={setLevel} onNewTask={() => void newTask(level)} />
+        <LevelSelector
+          level={level}
+          onLevelChange={(nextLevel) => {
+            setLevel(nextLevel);
+            requestNewTask();
+          }}
+          onNewTask={requestNewTask}
+        />
         <TaskCodePanel task={task} />
         {task && <TokenPicker tokens={task.tokens} usedIndices={usedIndices} disabled={checked} onPlace={place} />}
         {task && <AnswerConsole task={task} answer={answer} checked={checked} result={result} onUnplace={unplace} />}
@@ -89,7 +102,7 @@ export default function App() {
             isExplanationVisible={reveal}
             onCheck={check}
             onReset={() => setAnswer([])}
-            onNextTask={() => void newTask(level)}
+            onNextTask={requestNewTask}
             onToggleVisualization={() => setViz((value) => !value)}
             onToggleExplanation={() => setReveal((value) => !value)}
           />

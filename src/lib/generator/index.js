@@ -56,7 +56,7 @@ export function runSnippet(code, expected) {
     const fakeConsole = { log: (v) => out.push(String(v)) };
     try {
       new Function("console", code)(fakeConsole);
-    } catch (e) {
+    } catch {
       resolve(null);
       return;
     }

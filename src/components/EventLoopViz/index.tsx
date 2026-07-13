@@ -33,23 +33,21 @@ export default function EventLoopViz({ task }: EventLoopVizProps) {
   const steps = useMemo<SimulationStep[]>(() => buildSim(task) as SimulationStep[], [task]);
   const [index, setIndex] = useState(0);
   const [playing, setPlaying] = useState(true);
+  const isLastStep = index >= steps.length - 1;
 
-  useEffect(() => { setIndex(0); setPlaying(true); }, [steps]);
   useEffect(() => {
-    if (!playing || index >= steps.length - 1) {
-      if (index >= steps.length - 1) setPlaying(false);
-      return;
-    }
+    if (!playing || isLastStep) return;
+
     const timer = window.setTimeout(() => setIndex((currentIndex) => currentIndex + 1), 1700);
     return () => window.clearTimeout(timer);
-  }, [playing, index, steps]);
+  }, [playing, isLastStep]);
 
   const step = steps[index];
   return (
     <div className={s.viz}>
       <div className={s.controls}>
         <button className={s.ctrl} onClick={() => { setPlaying(false); setIndex((currentIndex) => Math.max(0, currentIndex - 1)); }}>‹</button>
-        <button className={`${s.ctrl} ${s.ctrlPlay}`} onClick={() => { if (index >= steps.length - 1) { setIndex(0); setPlaying(true); } else setPlaying((isPlaying) => !isPlaying); }}>{playing ? "❚❚" : index >= steps.length - 1 ? "↻" : "▶"}</button>
+        <button className={`${s.ctrl} ${s.ctrlPlay}`} onClick={() => { if (isLastStep) { setIndex(0); setPlaying(true); } else setPlaying((isPlaying) => !isPlaying); }}>{playing && !isLastStep ? "❚❚" : isLastStep ? "↻" : "▶"}</button>
         <button className={s.ctrl} onClick={() => { setPlaying(false); setIndex((currentIndex) => Math.min(steps.length - 1, currentIndex + 1)); }}>›</button>
         <span className={s.counter}>{index + 1}/{steps.length}</span><span key={index} className={s.note}>{step.note}</span>
       </div>
@@ -61,7 +59,7 @@ export default function EventLoopViz({ task }: EventLoopVizProps) {
           <VizZone title="Task Queue (setTimeout)" tone={s.toneNum} active={step.hl === "macro"} row>{step.macro.length ? step.macro.map((group) => <VizChip key={group} tone={s.toneNum}>{group}</VizChip>) : <span className={s.empty}>—</span>}</VizZone>
         </div>
       </div>
-      <div className={`${s.console} ${step.hl === "out" ? s.consoleActive : ""}`}><span className={s.consoleLabel}>CONSOLE</span>{step.out.map((label) => <span key={label} className={s.outChip}>'{label}'</span>)}{!step.out.length && <span className={s.empty}>вывода пока нет</span>}</div>
+      <div className={`${s.console} ${step.hl === "out" ? s.consoleActive : ""}`}><span className={s.consoleLabel}>CONSOLE</span>{step.out.map((label) => <span key={label} className={s.outChip}>&apos;{label}&apos;</span>)}{!step.out.length && <span className={s.empty}>вывода пока нет</span>}</div>
     </div>
   );
 }

@@ -14,7 +14,7 @@ export default function TokenPicker({ tokens, usedIndices, disabled, onPlace }: 
       <div className={s.tokensRow}>
         {tokens.map((token, index) => {
           const isUsed = usedIndices.has(index);
-          return <button key={index} className={`${s.chip} ${isUsed ? s.chipUsed : ""}`} disabled={isUsed || disabled} onClick={() => onPlace(index)}>'{token}'</button>;
+          return <button key={index} className={`${s.chip} ${isUsed ? s.chipUsed : ""}`} disabled={isUsed || disabled} onClick={() => onPlace(index)}>&apos;{token}&apos;</button>;
         })}
       </div>
     </div>
