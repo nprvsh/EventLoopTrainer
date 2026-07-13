@@ -10,16 +10,32 @@ import {
   TokenPicker,
   TrainerHeader,
 } from "@/components";
-import type { LevelKey, Stats, Task, ThemeKey } from "@/types";
+import type { ColorModeKey, ColorThemeKey, LevelKey, Stats, Task, ThemeKey } from "@/types";
 import s from "./App.module.css";
 
 const STATS_STORAGE_KEY = "event-loop-trainer:stats";
 const MISTAKES_STORAGE_KEY = "event-loop-trainer:mistakes";
+const COLOR_THEME_STORAGE_KEY = "event-loop-trainer:color-theme";
+const COLOR_MODE_STORAGE_KEY = "event-loop-trainer:color-mode";
 const emptyStats: Stats = { streak: 0, best: 0, solved: 0, total: 0 };
+const colorThemes: ColorThemeKey[] = ["midnight", "ocean", "forest", "rose"];
+const colorModes: ColorModeKey[] = ["dark", "light"];
+const themeColors: Record<ColorModeKey, Record<ColorThemeKey, string>> = {
+  dark: { midnight: "#14161F", ocean: "#071923", forest: "#101A14", rose: "#20131E" },
+  light: { midnight: "#F7F8FC", ocean: "#F1FAFD", forest: "#F4F9F1", rose: "#FDF5FA" },
+};
 
 export default function App() {
   const [level, setLevel] = useState<LevelKey>("easy");
   const [theme, setTheme] = useState<ThemeKey>("all");
+  const [colorTheme, setColorTheme] = useState<ColorThemeKey>(() => {
+    const savedTheme = localStorage.getItem(COLOR_THEME_STORAGE_KEY);
+    return colorThemes.includes(savedTheme as ColorThemeKey) ? savedTheme as ColorThemeKey : "midnight";
+  });
+  const [colorMode, setColorMode] = useState<ColorModeKey>(() => {
+    const savedMode = localStorage.getItem(COLOR_MODE_STORAGE_KEY);
+    return colorModes.includes(savedMode as ColorModeKey) ? savedMode as ColorModeKey : "dark";
+  });
   const [task, setTask] = useState<Task | null>(null);
   const [answer, setAnswer] = useState<number[]>([]);
   const [checked, setChecked] = useState(false);
@@ -74,6 +90,17 @@ export default function App() {
     localStorage.setItem(MISTAKES_STORAGE_KEY, JSON.stringify(mistakes));
   }, [mistakes]);
 
+  useEffect(() => {
+    document.documentElement.dataset.colorTheme = colorTheme;
+    document.documentElement.dataset.colorMode = colorMode;
+    document.documentElement.style.colorScheme = colorMode;
+    localStorage.setItem(COLOR_THEME_STORAGE_KEY, colorTheme);
+    localStorage.setItem(COLOR_MODE_STORAGE_KEY, colorMode);
+
+    const themeColor = document.querySelector('meta[name="theme-color"]');
+    themeColor?.setAttribute("content", themeColors[colorMode][colorTheme]);
+  }, [colorMode, colorTheme]);
+
   const place = (index: number) => {
     if (!checked) setAnswer((currentAnswer) => [...currentAnswer, index]);
   };
@@ -126,7 +153,13 @@ export default function App() {
   return (
     <div className={s.page}>
       <div className={s.wrap}>
-        <TrainerHeader stats={stats} />
+        <TrainerHeader
+          stats={stats}
+          colorTheme={colorTheme}
+          colorMode={colorMode}
+          onColorThemeChange={setColorTheme}
+          onColorModeChange={setColorMode}
+        />
         <LevelSelector
           level={level}
           theme={theme}

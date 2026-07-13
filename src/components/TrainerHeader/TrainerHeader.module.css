@@ -6,6 +6,12 @@
   gap: 10px;
 }
 
+.meta {
+  display: grid;
+  justify-items: end;
+  gap: 7px;
+}
+
 .kicker {
   font-size: 11px;
   letter-spacing: 2px;
@@ -34,10 +40,84 @@
   line-height: 1.7;
 }
 
+.appearanceControls,
+.themePicker,
+.modePicker {
+  display: flex;
+  gap: 5px;
+}
+
+.appearanceControls {
+  align-items: center;
+}
+
+.modePicker {
+  padding-right: 5px;
+  border-right: 1px solid var(--panel-edge);
+}
+
+.modeButton,
+.themeButton {
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+}
+
+.modeButton {
+  width: auto;
+  height: auto;
+  padding: 3px 6px;
+  border-radius: 5px;
+  color: var(--dim);
+  font-size: 11px;
+  line-height: 1;
+}
+
+.modeButton:hover,
+.modeButtonActive,
+.themeButton:hover,
+.themeButtonActive {
+  border-color: var(--text);
+  color: var(--text);
+}
+
+.modeButton:focus-visible,
+.themeButton:focus-visible {
+  outline: 2px solid var(--amber);
+  outline-offset: 2px;
+}
+
+.themeDot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.themeDotMidnight { background: #FFC66D; }
+.themeDotOcean { background: #62D6FF; }
+.themeDotForest { background: #C7E878; }
+.themeDotRose { background: #FF9DCB; }
+
 .statAccent {
   color: var(--amber);
 }
 
 .statText {
   color: var(--text);
+}
+
+@media (max-width: 520px) {
+  .meta {
+    justify-items: start;
+  }
+
+  .stats {
+    text-align: left;
+  }
 }
