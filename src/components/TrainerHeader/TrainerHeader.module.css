@@ -41,8 +41,7 @@
 }
 
 .appearanceControls,
-.themePicker,
-.modePicker {
+.themePicker {
   display: flex;
   gap: 5px;
 }
@@ -51,12 +50,6 @@
   align-items: center;
 }
 
-.modePicker {
-  padding-right: 5px;
-  border-right: 1px solid var(--panel-edge);
-}
-
-.modeButton,
 .themeButton {
   display: grid;
   place-items: center;
@@ -69,25 +62,12 @@
   cursor: pointer;
 }
 
-.modeButton {
-  width: auto;
-  height: auto;
-  padding: 3px 6px;
-  border-radius: 5px;
-  color: var(--dim);
-  font-size: 11px;
-  line-height: 1;
-}
-
-.modeButton:hover,
-.modeButtonActive,
 .themeButton:hover,
 .themeButtonActive {
   border-color: var(--text);
   color: var(--text);
 }
 
-.modeButton:focus-visible,
 .themeButton:focus-visible {
   outline: 2px solid var(--amber);
   outline-offset: 2px;

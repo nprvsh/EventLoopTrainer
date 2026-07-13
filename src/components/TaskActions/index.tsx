@@ -1,3 +1,4 @@
+import { strings } from "@/config/strings";
 import controls from "@/styles/controls.module.css";
 import s from "./TaskActions.module.css";
 
@@ -37,38 +38,38 @@ export default function TaskActions({
       {!checked ? (
         <>
           <button className={s.primary} onClick={onCheck} disabled={!done}>
-            Проверить
+            {strings.taskActions.check}
           </button>
           <button className={controls.btn} onClick={onReset} disabled={!answer.length}>
-            сбросить
+            {strings.taskActions.reset}
           </button>
           {mistakesCount > 0 && (
             <button className={controls.btn} onClick={onRetryLastMistake}>
-              ↻ ошибки ({mistakesCount})
+              {strings.taskActions.retryMistakes(mistakesCount)}
             </button>
           )}
         </>
       ) : (
         <>
           <span className={`${s.verdict} ${isWin ? s.verdictWin : s.verdictLose}`}>
-            {isWin ? "✓ Верно!" : "✗ Не совсем"}
+            {isWin ? strings.taskActions.correct : strings.taskActions.incorrect}
           </span>
           <button className={s.primary} onClick={onNextTask}>
-            Следующая →
+            {strings.taskActions.next}
           </button>
           {!isWin && mistakesCount > 0 && (
             <button className={controls.btn} onClick={onRetryLastMistake}>
-              ↻ Повторить эту задачу
+              {strings.taskActions.retryTask}
             </button>
           )}
           <button
             className={`${controls.btn} ${isVisualizationVisible ? controls.btnActive : ""}`}
             onClick={onToggleVisualization}
           >
-            {isVisualizationVisible ? "⏹ скрыть анимацию" : "▶ анимация event loop"}
+            {isVisualizationVisible ? strings.taskActions.hideAnimation : strings.taskActions.showAnimation}
           </button>
           <button className={controls.btn} onClick={onToggleExplanation}>
-            {isExplanationVisible ? "скрыть разбор" : "разбор"}
+            {isExplanationVisible ? strings.taskActions.hideExplanation : strings.taskActions.showExplanation}
           </button>
         </>
       )}

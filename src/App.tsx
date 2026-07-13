@@ -1,4 +1,6 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import type { CSSProperties } from "react";
+import { strings } from "@/config/strings";
 import { generateTask } from "@/lib";
 import {
   AnswerConsole,
@@ -10,19 +12,29 @@ import {
   TokenPicker,
   TrainerHeader,
 } from "@/components";
-import type { ColorModeKey, ColorThemeKey, LevelKey, Stats, Task, ThemeKey } from "@/types";
+import type { CodeLineState, ColorThemeKey, LevelKey, Stats, Task, ThemeKey } from "@/types";
 import s from "./App.module.css";
 
 const STATS_STORAGE_KEY = "event-loop-trainer:stats";
 const MISTAKES_STORAGE_KEY = "event-loop-trainer:mistakes";
 const COLOR_THEME_STORAGE_KEY = "event-loop-trainer:color-theme";
-const COLOR_MODE_STORAGE_KEY = "event-loop-trainer:color-mode";
 const emptyStats: Stats = { streak: 0, best: 0, solved: 0, total: 0 };
 const colorThemes: ColorThemeKey[] = ["midnight", "ocean", "forest", "rose"];
-const colorModes: ColorModeKey[] = ["dark", "light"];
-const themeColors: Record<ColorModeKey, Record<ColorThemeKey, string>> = {
-  dark: { midnight: "#14161F", ocean: "#071923", forest: "#101A14", rose: "#20131E" },
-  light: { midnight: "#F7F8FC", ocean: "#F1FAFD", forest: "#F4F9F1", rose: "#FDF5FA" },
+type QueueFlight = {
+  id: number;
+  label: string;
+  fromX: number;
+  fromY: number;
+  width: number;
+  toX: number;
+  toY: number;
+};
+
+const themeColors: Record<ColorThemeKey, string> = {
+  midnight: "#14161F",
+  ocean: "#071923",
+  forest: "#101A14",
+  rose: "#20131E",
 };
 
 export default function App() {
@@ -31,10 +43,6 @@ export default function App() {
   const [colorTheme, setColorTheme] = useState<ColorThemeKey>(() => {
     const savedTheme = localStorage.getItem(COLOR_THEME_STORAGE_KEY);
     return colorThemes.includes(savedTheme as ColorThemeKey) ? savedTheme as ColorThemeKey : "midnight";
-  });
-  const [colorMode, setColorMode] = useState<ColorModeKey>(() => {
-    const savedMode = localStorage.getItem(COLOR_MODE_STORAGE_KEY);
-    return colorModes.includes(savedMode as ColorModeKey) ? savedMode as ColorModeKey : "dark";
   });
   const [task, setTask] = useState<Task | null>(null);
   const [answer, setAnswer] = useState<number[]>([]);
@@ -57,6 +65,8 @@ export default function App() {
   const [isExplanationVisible, setIsExplanationVisible] = useState(false);
   const [isVisualizationVisible, setIsVisualizationVisible] = useState(false);
   const [activeCodeLine, setActiveCodeLine] = useState<number | null>(null);
+  const [activeCodeLineState, setActiveCodeLineState] = useState<CodeLineState | null>(null);
+  const [queueFlight, setQueueFlight] = useState<QueueFlight | null>(null);
   const [taskRequest, setTaskRequest] = useState(0);
 
   const requestNewTask = () => {
@@ -67,6 +77,8 @@ export default function App() {
     setIsExplanationVisible(false);
     setIsVisualizationVisible(false);
     setActiveCodeLine(null);
+    setActiveCodeLineState(null);
+    setQueueFlight(null);
     setTaskRequest((request) => request + 1);
   };
 
@@ -92,14 +104,12 @@ export default function App() {
 
   useEffect(() => {
     document.documentElement.dataset.colorTheme = colorTheme;
-    document.documentElement.dataset.colorMode = colorMode;
-    document.documentElement.style.colorScheme = colorMode;
+    document.documentElement.style.colorScheme = "dark";
     localStorage.setItem(COLOR_THEME_STORAGE_KEY, colorTheme);
-    localStorage.setItem(COLOR_MODE_STORAGE_KEY, colorMode);
 
     const themeColor = document.querySelector('meta[name="theme-color"]');
-    themeColor?.setAttribute("content", themeColors[colorMode][colorTheme]);
-  }, [colorMode, colorTheme]);
+    themeColor?.setAttribute("content", themeColors[colorTheme]);
+  }, [colorTheme]);
 
   const place = (index: number) => {
     if (!checked) setAnswer((currentAnswer) => [...currentAnswer, index]);
@@ -148,7 +158,25 @@ export default function App() {
     setIsExplanationVisible(false);
     setIsVisualizationVisible(false);
     setActiveCodeLine(null);
+    setActiveCodeLineState(null);
+    setQueueFlight(null);
   };
+
+  const animateQueueEntry = useCallback((line: number, source: DOMRect) => {
+    const target = document.querySelector<HTMLElement>('[data-queue-zone][data-active="true"]');
+    if (!task || !target) return;
+
+    const targetBounds = target.getBoundingClientRect();
+    setQueueFlight({
+      id: Date.now(),
+      label: task.lines[line],
+      fromX: source.left,
+      fromY: source.top,
+      width: source.width,
+      toX: targetBounds.left + 28,
+      toY: targetBounds.top + 26,
+    });
+  }, [task]);
 
   return (
     <div className={s.page}>
@@ -156,9 +184,7 @@ export default function App() {
         <TrainerHeader
           stats={stats}
           colorTheme={colorTheme}
-          colorMode={colorMode}
           onColorThemeChange={setColorTheme}
-          onColorModeChange={setColorMode}
         />
         <LevelSelector
           level={level}
@@ -174,32 +200,84 @@ export default function App() {
           }}
           onNewTask={requestNewTask}
         />
-        <TaskCodePanel task={task} activeLine={activeCodeLine} />
-        {task && <TokenPicker tokens={task.tokens} usedIndices={usedIndices} disabled={checked} onPlace={place} />}
-        {task && <AnswerConsole task={task} answer={answer} checked={checked} result={result} onUnplace={unplace} />}
-        {task && (
-          <TaskActions
-            answer={answer}
-            checked={checked}
-            done={isComplete}
-            isWin={isWin}
-            isVisualizationVisible={isVisualizationVisible}
-            isExplanationVisible={isExplanationVisible}
-            onCheck={check}
-            onReset={() => setAnswer([])}
-            onNextTask={requestNewTask}
-            onRetryLastMistake={retryLastMistake}
-            mistakesCount={mistakes.length}
-            onToggleVisualization={() => setIsVisualizationVisible((value) => {
-              if (value) setActiveCodeLine(null);
-              return !value;
-            })}
-            onToggleExplanation={() => setIsExplanationVisible((value) => !value)}
-          />
-        )}
-        {task && checked && isVisualizationVisible && <EventLoopViz task={task} onStepChange={setActiveCodeLine} />}
+        <main className={s.workspace}>
+          <section className={s.answerColumn} aria-label={strings.app.answerColumn}>
+            <h2 className={s.columnTitle}>{strings.app.answerColumn}</h2>
+            {task && <TokenPicker tokens={task.tokens} usedIndices={usedIndices} disabled={checked} onPlace={place} />}
+            {task && <AnswerConsole task={task} answer={answer} checked={checked} result={result} onUnplace={unplace} />}
+            {task && (
+              <TaskActions
+                answer={answer}
+                checked={checked}
+                done={isComplete}
+                isWin={isWin}
+                isVisualizationVisible={isVisualizationVisible}
+                isExplanationVisible={isExplanationVisible}
+                onCheck={check}
+                onReset={() => setAnswer([])}
+                onNextTask={requestNewTask}
+                onRetryLastMistake={retryLastMistake}
+                mistakesCount={mistakes.length}
+                onToggleVisualization={() => setIsVisualizationVisible((value) => {
+                  if (value) {
+                    setActiveCodeLine(null);
+                    setActiveCodeLineState(null);
+                    setQueueFlight(null);
+                  }
+                  return !value;
+                })}
+                onToggleExplanation={() => setIsExplanationVisible((value) => !value)}
+              />
+            )}
+          </section>
+
+          <section className={s.codeColumn} aria-label={strings.app.codeColumnAriaLabel}>
+            <h2 className={s.columnTitle}>{strings.app.codeColumn}</h2>
+            <TaskCodePanel
+              task={task}
+              activeLine={activeCodeLine}
+              activeLineState={activeCodeLineState}
+              onQueueEntry={animateQueueEntry}
+            />
+          </section>
+
+          <section className={s.visualizationColumn} aria-label={strings.app.visualizationColumnAriaLabel}>
+            <h2 className={s.columnTitle}>{strings.app.visualizationColumn}</h2>
+            {task && checked && isVisualizationVisible ? (
+              <EventLoopViz
+                task={task}
+                onStepChange={(line, state) => {
+                  setActiveCodeLine(line);
+                  setActiveCodeLineState(state);
+                }}
+              />
+            ) : (
+              <div className={s.visualizationPlaceholder}>
+                {checked
+                  ? strings.app.visualizationAfterCheck
+                  : strings.app.visualizationBeforeCheck}
+              </div>
+            )}
+          </section>
+        </main>
         {task && checked && isExplanationVisible && <TaskExplanation task={task} />}
       </div>
+      {queueFlight && (
+        <span
+          key={queueFlight.id}
+          className={s.queueFlight}
+          style={{
+            "--flight-from-x": `${queueFlight.fromX}px`,
+            "--flight-from-y": `${queueFlight.fromY}px`,
+            "--flight-width": `${queueFlight.width}px`,
+            "--flight-to-x": `${queueFlight.toX}px`,
+            "--flight-to-y": `${queueFlight.toY}px`,
+          } as CSSProperties}
+          onAnimationEnd={() => setQueueFlight((current) => current?.id === queueFlight.id ? null : current)}
+        >
+          {queueFlight.label}
+        </span>
+      )}
     </div>
   );
 }

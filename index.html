@@ -9,12 +9,7 @@
     <title>Event Loop Training</title>
     <script>
       const colorTheme = localStorage.getItem("event-loop-trainer:color-theme");
-      const colorMode = localStorage.getItem("event-loop-trainer:color-mode");
       if (["midnight", "ocean", "forest", "rose"].includes(colorTheme)) document.documentElement.dataset.colorTheme = colorTheme;
-      if (["dark", "light"].includes(colorMode)) {
-        document.documentElement.dataset.colorMode = colorMode;
-        document.documentElement.style.colorScheme = colorMode;
-      }
     </script>
     <style>body { margin: 0; }</style>
   </head>

@@ -4,6 +4,112 @@
 }
 
 .wrap {
-  max-width: 700px;
+  max-width: 1680px;
   margin: 0 auto;
+}
+
+.workspace {
+  display: grid;
+  grid-template-columns: minmax(260px, 0.82fr) minmax(370px, 1.1fr) minmax(360px, 1.25fr);
+  gap: 20px;
+  align-items: start;
+  margin-top: 22px;
+}
+
+.answerColumn,
+.codeColumn,
+.visualizationColumn {
+  min-width: 0;
+  padding: 18px;
+  border: 1px solid var(--panel-edge);
+  border-radius: 14px;
+  background: var(--panel);
+}
+
+.columnTitle {
+  margin: 0 0 14px;
+  color: var(--dim);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.visualizationPlaceholder {
+  display: grid;
+  min-height: 240px;
+  place-items: center;
+  padding: 24px;
+  border: 1px dashed var(--panel-edge);
+  border-radius: 10px;
+  color: var(--faint);
+  font-size: 13px;
+  line-height: 1.6;
+  text-align: center;
+}
+
+.queueFlight {
+  position: fixed;
+  z-index: 10;
+  top: 0;
+  left: 0;
+  width: min(var(--flight-width), 460px);
+  overflow: hidden;
+  padding: 2px 4px;
+  border-left: 2px solid var(--amber);
+  border-radius: 2px;
+  background: color-mix(in srgb, var(--amber) 13%, var(--panel));
+  box-shadow: 0 5px 18px color-mix(in srgb, var(--amber) 22%, transparent);
+  color: var(--text);
+  font-size: 13.5px;
+  line-height: 1.45;
+  pointer-events: none;
+  white-space: nowrap;
+  transform-origin: left center;
+  animation: queueFlight 0.8s cubic-bezier(0.22, 0.8, 0.26, 1) both;
+}
+
+@keyframes queueFlight {
+  from {
+    opacity: 0.92;
+    transform: translate(var(--flight-from-x), var(--flight-from-y)) scale(1);
+  }
+
+  15% {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0.2;
+    transform: translate(var(--flight-to-x), var(--flight-to-y)) scale(0.62);
+  }
+}
+
+@media (max-width: 1200px) {
+  .workspace {
+    grid-template-columns: minmax(280px, 0.8fr) minmax(400px, 1.2fr);
+  }
+
+  .visualizationColumn {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 760px) {
+  .page {
+    padding: 18px 12px 40px;
+  }
+
+  .workspace {
+    grid-template-columns: 1fr;
+    gap: 14px;
+    margin-top: 14px;
+  }
+
+  .answerColumn,
+  .codeColumn,
+  .visualizationColumn {
+    grid-column: auto;
+    padding: 14px;
+  }
 }

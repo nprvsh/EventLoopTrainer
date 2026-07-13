@@ -3,8 +3,8 @@ import s from "./highlight.module.css";
 
 const TOKEN_RE = /('[^']*')|(\/\/.*$)|\b(async|await|function|new|const|return|null)\b|\b(console|Promise|setTimeout|queueMicrotask)\b|\.(log|then|finally|resolve)\b|\b(\d+)\b|\b(run\d+)\b/g;
 
-export function highlightLine(line: string, key: number, className?: string): ReactNode {
-  if (!line.trim()) return <div key={key} className={`${s.blank} ${className ?? ""}`} />;
+export function highlightLine(line: string, key: number): ReactNode {
+  if (!line.trim()) return <div key={key} data-code-line={key} className={s.blank} />;
 
   const parts: ReactNode[] = [];
   let last = 0;
@@ -25,5 +25,5 @@ export function highlightLine(line: string, key: number, className?: string): Re
   }
 
   if (last < line.length) parts.push(<span key={index++}>{line.slice(last)}</span>);
-  return <div key={key} className={`${s.line} ${className ?? ""}`}>{parts}</div>;
+  return <div key={key} data-code-line={key} className={s.line}>{parts}</div>;
 }

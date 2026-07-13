@@ -1,3 +1,4 @@
+import { strings } from "@/config/strings";
 import type { Task } from "@/types";
 import s from "./AnswerConsole.module.css";
 
@@ -18,7 +19,7 @@ export default function AnswerConsole({
 }: AnswerConsoleProps) {
   return (
     <div className={s.consoleBox}>
-      <div className={s.consoleHeader}>Console — твой прогноз</div>
+      <div className={s.consoleHeader}>{strings.answerConsole.title}</div>
       <div className={s.consoleBody}>
         {task.truth.map((_, position) => {
           const filled = position < answer.length;
@@ -31,7 +32,7 @@ export default function AnswerConsole({
               disabled={!filled || checked}
               onClick={() => onUnplace(position)}
               className={`${s.row} ${filled && !checked ? s.rowClickable : ""}`}
-              title={filled && !checked ? "убрать" : undefined}
+              title={filled && !checked ? strings.answerConsole.remove : undefined}
             >
               <span className={s.prompt}>{"›"}</span>
               {filled ? (
@@ -41,7 +42,7 @@ export default function AnswerConsole({
                   </span>
                   {checked && !isCorrect && (
                     <span className={s.fixHint}>
-                      → должно быть <span className={s.tokOk}>&apos;{task.truth[position]}&apos;</span>
+                      {strings.answerConsole.expected}<span className={s.tokOk}>&apos;{task.truth[position]}&apos;</span>
                     </span>
                   )}
                   {checked && isCorrect && <span className={s.checkMark}>✓</span>}

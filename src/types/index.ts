@@ -45,7 +45,6 @@ export type LevelKey = "easy" | "medium" | "hard";
 export type ThemeKey = "all" | "microtasks" | "timers" | "async";
 
 export type ColorThemeKey = "midnight" | "ocean" | "forest" | "rose";
-export type ColorModeKey = "dark" | "light";
 
 export type Snippet = {
   code: string;
@@ -69,6 +68,7 @@ export type Stats = {
 }
 
 export type VisualizationZone = "stack" | "micro" | "macro" | "out";
+export type CodeLineState = "queued" | "executing";
 
 export type SimulationStep = {
   stack: string[];
@@ -77,5 +77,6 @@ export type SimulationStep = {
   out: string[];
   note: string;
   codeLine: number | null;
+  codeLineState: CodeLineState | null;
   hl: VisualizationZone | null;
 }

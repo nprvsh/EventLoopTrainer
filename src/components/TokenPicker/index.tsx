@@ -1,3 +1,4 @@
+import { strings } from "@/config/strings";
 import s from "./TokenPicker.module.css";
 
 type TokenPickerProps = {
@@ -10,7 +11,7 @@ type TokenPickerProps = {
 export default function TokenPicker({ tokens, usedIndices, disabled, onPlace }: TokenPickerProps) {
   return (
     <div className={s.tokens}>
-      <div className={s.tokensLabel}>НАЖИМАЙ В ТОМ ПОРЯДКЕ, В КОТОРОМ ПОЯВИТСЯ ВЫВОД</div>
+      <div className={s.tokensLabel}>{strings.tokenPicker.instruction}</div>
       <div className={s.tokensRow}>
         {tokens.map((token, index) => {
           const isUsed = usedIndices.has(index);

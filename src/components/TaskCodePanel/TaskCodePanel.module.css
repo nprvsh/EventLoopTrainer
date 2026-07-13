@@ -27,6 +27,7 @@
 }
 
 .codeBody {
+  position: relative;
   padding: 16px 18px;
   font-size: 13.5px;
   overflow-x: auto;
@@ -36,14 +37,30 @@
   color: var(--faint);
 }
 
-.lineActive {
-  background: color-mix(in srgb, var(--amber) 13%, transparent);
-  box-shadow: inset 2px 0 var(--amber);
+.lineHighlight {
+  position: absolute;
+  z-index: 0;
+  top: 16px;
+  right: 18px;
+  left: 18px;
+  height: 1.45em;
   border-radius: 2px;
-  animation: highlightLine 0.25s ease both;
+  pointer-events: none;
+  transform: translateY(calc(var(--active-line-index) * 1.45em));
+  transition: transform 280ms cubic-bezier(0.22, 1, 0.36, 1), background-color 180ms ease, box-shadow 180ms ease;
 }
 
-@keyframes highlightLine {
-  from { opacity: 0.45; }
-  to { opacity: 1; }
+.codeBody > :not(.lineHighlight) {
+  position: relative;
+  z-index: 1;
+}
+
+.lineQueued {
+  background: color-mix(in srgb, var(--amber) 13%, transparent);
+  box-shadow: inset 2px 0 var(--amber);
+}
+
+.lineExecuting {
+  background: color-mix(in srgb, var(--good) 13%, transparent);
+  box-shadow: inset 2px 0 var(--good);
 }

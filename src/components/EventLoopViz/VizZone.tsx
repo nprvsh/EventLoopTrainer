@@ -6,6 +6,8 @@ type VizZoneProps = PropsWithChildren & {
   active: boolean;
   stack?: boolean;
   row?: boolean;
+  queueZone?: "micro" | "macro";
+  pendingLabel?: string;
   classNames: {
     zone: string;
     stack: string;
@@ -17,11 +19,15 @@ type VizZoneProps = PropsWithChildren & {
   };
 }
 
-export default function VizZone({ title, tone, active, children, stack = false, row = false, classNames }: VizZoneProps) {
+export default function VizZone({ title, tone, active, children, stack = false, row = false, queueZone, pendingLabel, classNames }: VizZoneProps) {
   return (
-    <div className={[classNames.zone, tone, stack ? classNames.stack : classNames.queue, active ? classNames.active : ""].join(" ")}>
+    <div
+      className={[classNames.zone, tone, stack ? classNames.stack : classNames.queue, active ? classNames.active : ""].join(" ")}
+      data-queue-zone={queueZone}
+      data-active={queueZone ? active : undefined}
+    >
       <div className={classNames.title}>{title}</div>
-      <div className={`${classNames.body} ${row ? classNames.row : ""}`}>{children}</div>
+      <div className={`${classNames.body} ${row ? classNames.row : ""}`} data-pending-label={pendingLabel}>{children}</div>
     </div>
   );
 }

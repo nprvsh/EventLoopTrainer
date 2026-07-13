@@ -32,7 +32,7 @@ export function buildSim(task) {
 
   const state = { stack: [], micro: [], macro: [], out: [] };
   const steps = [];
-  const captureStep = (note, highlightedZone, label = null) =>
+  const captureStep = (note, highlightedZone, label = null, codeLineState = null) =>
     steps.push({
       stack: [...state.stack],
       micro: [...state.micro],
@@ -40,6 +40,7 @@ export function buildSim(task) {
       out: [...state.out],
       note,
       codeLine: label ? codeLineForLabel(label) : null,
+      codeLineState,
       hl: highlightedZone || null,
     });
 
@@ -58,7 +59,8 @@ export function buildSim(task) {
           ? `new Promise: executor выполняется синхронно → лог '${log.label}'`
           : `console.log('${log.label}') — синхронно, прямо в стеке`,
         "out",
-        log.label
+        log.label,
+        "executing"
       );
     } else if (isMicroPhase(log.phase)) {
       state.micro.push(groupIdByLabel[log.label]);
@@ -67,7 +69,8 @@ export function buildSim(task) {
           ? `await приостанавливает функцию: продолжение '${log.label}' → микрозадачи`
           : `Колбэк ${formatGroupLabels(groupIdByLabel[log.label])} → очередь микрозадач`,
         "micro",
-        log.label
+        log.label,
+        "queued"
       );
     } else {
       state.macro.push(groupIdByLabel[log.label]);
@@ -76,7 +79,8 @@ export function buildSim(task) {
           ? `setTimeout(…, 100): колбэк '${log.label}' → очередь задач (сработает позже)`
           : `setTimeout регистрирует колбэк ${formatGroupLabels(groupIdByLabel[log.label])} → очередь задач`,
         "macro",
-        log.label
+        log.label,
+        "queued"
       );
     }
   }
@@ -88,7 +92,7 @@ export function buildSim(task) {
     const group = callbackGroups[groupId];
     state.stack = [`callback ${formatGroupLabels(groupId)}`];
     state.out.push(...group.labels);
-    captureStep(note, highlightedZone, group.labels[0]);
+    captureStep(note, highlightedZone, group.labels[0], "executing");
 
     for (const label of group.labels) {
       for (const spawnedLog of spawnedLogsByParent[label] || []) {
@@ -99,14 +103,16 @@ export function buildSim(task) {
               ? `Следующий await: продолжение '${spawnedLog.label}' → очередь микрозадач`
               : `Изнутри '${label}': колбэк '${spawnedLog.label}' → очередь микрозадач`,
             "micro",
-            spawnedLog.label
+            spawnedLog.label,
+            "queued"
           );
         } else {
           state.macro.push(groupIdByLabel[spawnedLog.label]);
           captureStep(
             `Изнутри '${label}': новый setTimeout '${spawnedLog.label}' → очередь задач`,
             "macro",
-            spawnedLog.label
+            spawnedLog.label,
+            "queued"
           );
         }
       }

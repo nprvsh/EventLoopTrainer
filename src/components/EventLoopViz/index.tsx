@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
+import { strings } from "@/config/strings";
 import { buildSim } from "@/lib";
-import type { SimulationStep, Task } from "@/types";
+import type { CodeLineState, SimulationStep, Task } from "@/types";
 import s from "./EventLoopViz.module.css";
 import VizChip from "./VizChip";
 import VizZone from "./VizZone";
@@ -17,7 +18,7 @@ const zoneClassNames = {
 
 type EventLoopVizProps = {
   task: Task;
-  onStepChange?: (codeLine: number | null) => void;
+  onStepChange?: (codeLine: number | null, codeLineState: CodeLineState | null) => void;
 };
 
 export default function EventLoopViz({ task, onStepChange }: EventLoopVizProps) {
@@ -35,18 +36,18 @@ export default function EventLoopViz({ task, onStepChange }: EventLoopVizProps) 
 
   const step = steps[index];
   useEffect(() => {
-    onStepChange?.(step.codeLine);
-  }, [onStepChange, step.codeLine]);
+    onStepChange?.(step.codeLine, step.codeLineState);
+  }, [onStepChange, step.codeLine, step.codeLineState]);
 
   const activeCallback = step.stack[0]?.replace("callback ", "");
   const isDrainingMicrotasks = step.micro.length > 0 && step.stack.length === 0;
   const eventLoopMessage = activeCallback
-    ? "Выполняем колбэк из очереди"
+    ? strings.eventLoopViz.callbackRunning
     : isDrainingMicrotasks
-      ? "Стек пуст — очищаем microtask queue"
+      ? strings.eventLoopViz.drainMicrotasks
       : step.macro.length > 0
-        ? "Стек пуст — берём одну macrotask"
-        : "Ожидаем работу очередей";
+        ? strings.eventLoopViz.takeMacrotask
+        : strings.eventLoopViz.waiting;
 
   const showPreviousStep = () => {
     setPlaying(false);
@@ -71,24 +72,24 @@ export default function EventLoopViz({ task, onStepChange }: EventLoopVizProps) 
   return (
     <div className={s.viz}>
       <div className={s.controls}>
-        <button className={s.ctrl} aria-label="Предыдущий шаг" disabled={index === 0} onClick={showPreviousStep}>
+        <button className={s.ctrl} aria-label={strings.eventLoopViz.previousStep} disabled={index === 0} onClick={showPreviousStep}>
           ‹
         </button>
         <button
           className={`${s.ctrl} ${s.ctrlPlay}`}
-          aria-label={isLastStep ? "Запустить заново" : playing ? "Пауза" : "Продолжить"}
+          aria-label={isLastStep ? strings.eventLoopViz.restart : playing ? strings.eventLoopViz.pause : strings.eventLoopViz.continue}
           onClick={togglePlayback}
         >
           {playing && !isLastStep ? "❚❚" : isLastStep ? "↻" : "▶"}
         </button>
-        <button className={s.ctrl} aria-label="Следующий шаг" disabled={isLastStep} onClick={showNextStep}>
+        <button className={s.ctrl} aria-label={strings.eventLoopViz.nextStep} disabled={isLastStep} onClick={showNextStep}>
           ›
         </button>
         <span className={s.counter}>
           {index + 1}/{steps.length}
         </span>
         <div key={index} className={s.reason}>
-          <span className={s.reasonLabel}>Почему этот шаг?</span>
+          <span className={s.reasonLabel}>{strings.eventLoopViz.reason}</span>
           <span className={s.note}>{step.note}</span>
         </div>
       </div>
@@ -97,7 +98,7 @@ export default function EventLoopViz({ task, onStepChange }: EventLoopVizProps) 
       </div>
       <div className={s.zones}>
         <VizZone
-          title="Call Stack"
+          title={strings.eventLoopViz.callStack}
           tone={s.toneAmber}
           active={step.hl === "stack" || Boolean(activeCallback)}
           stack
@@ -110,30 +111,27 @@ export default function EventLoopViz({ task, onStepChange }: EventLoopVizProps) 
               </VizChip>
             ))
           ) : (
-            <span className={s.empty}>пусто</span>
+            <span className={s.empty}>{strings.eventLoopViz.empty}</span>
           )}
         </VizZone>
-        <div className={s.flow} aria-label="Состояние цикла событий">
+        <div className={s.flow} aria-label={strings.eventLoopViz.flowAriaLabel}>
           <span className={s.flowArrow}>⇄</span>
-          <div className={s.loop}>
-            Event
-            <br />
-            Loop
-          </div>
           <span className={s.flowCaption}>{eventLoopMessage}</span>
         </div>
         <div className={s.queues}>
           <VizZone
-            title="Microtask Queue · FIFO →"
+            title={strings.eventLoopViz.microtaskQueue}
             tone={s.toneKw}
             active={step.hl === "micro" || isDrainingMicrotasks}
             row
+            queueZone="micro"
+            pendingLabel={strings.eventLoopViz.pending}
             classNames={zoneClassNames}
           >
             {step.micro.length ? (
               step.micro.map((group, groupIndex) => (
                 <VizChip key={group} tone={s.toneKw} className={s.chip} wideClassName={s.chipWide}>
-                  {groupIndex === 0 ? `следующая: ${group}` : group}
+                  {groupIndex === 0 ? strings.eventLoopViz.nextQueueItem(group) : group}
                 </VizChip>
               ))
             ) : (
@@ -141,16 +139,18 @@ export default function EventLoopViz({ task, onStepChange }: EventLoopVizProps) 
             )}
           </VizZone>
           <VizZone
-            title="Task Queue · FIFO →"
+            title={strings.eventLoopViz.taskQueue}
             tone={s.toneNum}
             active={step.hl === "macro"}
             row
+            queueZone="macro"
+            pendingLabel={strings.eventLoopViz.pending}
             classNames={zoneClassNames}
           >
             {step.macro.length ? (
               step.macro.map((group, groupIndex) => (
                 <VizChip key={group} tone={s.toneNum} className={s.chip} wideClassName={s.chipWide}>
-                  {groupIndex === 0 ? `следующая: ${group}` : group}
+                  {groupIndex === 0 ? strings.eventLoopViz.nextQueueItem(group) : group}
                 </VizChip>
               ))
             ) : (
@@ -160,13 +160,13 @@ export default function EventLoopViz({ task, onStepChange }: EventLoopVizProps) 
         </div>
       </div>
       <div className={`${s.console} ${step.hl === "out" ? s.consoleActive : ""}`}>
-        <span className={s.consoleLabel}>CONSOLE</span>
+        <span className={s.consoleLabel}>{strings.eventLoopViz.console}</span>
         {step.out.map((label) => (
           <span key={label} className={s.outChip}>
             &apos;{label}&apos;
           </span>
         ))}
-        {!step.out.length && <span className={s.empty}>вывода пока нет</span>}
+        {!step.out.length && <span className={s.empty}>{strings.eventLoopViz.noOutput}</span>}
       </div>
     </div>
   );

@@ -1,3 +1,4 @@
+import { strings } from "@/config/strings";
 import { LEVELS, THEMES } from "@/data";
 import controls from "@/styles/controls.module.css";
 import type { LevelKey, ThemeKey } from "@/types";
@@ -17,8 +18,8 @@ export default function LevelSelector({ level, theme, onLevelChange, onThemeChan
   return (
     <div className={s.levels}>
       <div className={s.section}>
-        <span className={s.label}>Сложность</span>
-        <div className={s.group} aria-label="Сложность">
+        <span className={s.label}>{strings.levelSelector.level}</span>
+        <div className={s.group} aria-label={strings.levelSelector.level}>
           {Object.entries(LEVELS).map(([key, config]) => (
             <button key={key} className={`${controls.btn} ${level === key ? controls.btnActive : ""}`} onClick={() => onLevelChange(key as LevelKey)} title={config.desc}>
               {config.title}
@@ -27,8 +28,8 @@ export default function LevelSelector({ level, theme, onLevelChange, onThemeChan
         </div>
       </div>
       <div className={s.section}>
-        <span className={s.label}>Тема</span>
-        <div className={s.group} aria-label="Тема задания">
+        <span className={s.label}>{strings.levelSelector.theme}</span>
+        <div className={s.group} aria-label={strings.levelSelector.taskThemeAriaLabel}>
           {Object.entries(THEMES).map(([key, config]) => {
             const available = !config.blocks || currentLevel.pool.some((block: string) => config.blocks.includes(block));
             return (
@@ -37,7 +38,7 @@ export default function LevelSelector({ level, theme, onLevelChange, onThemeChan
                 className={`${controls.btn} ${theme === key ? controls.btnActive : ""}`}
                 disabled={!available}
                 onClick={() => onThemeChange(key as ThemeKey)}
-                title={available ? `Тема: ${config.title}` : "Эта тема доступна на уровнях Medium и Hard"}
+                title={available ? strings.levelSelector.themeTitle(config.title) : strings.levelSelector.unavailableThemeTitle}
               >
                 {config.title}
               </button>
@@ -45,7 +46,7 @@ export default function LevelSelector({ level, theme, onLevelChange, onThemeChan
           })}
         </div>
       </div>
-      <button className={`${controls.btn} ${s.pushRight}`} onClick={onNewTask}>↻ новая задача</button>
+      <button className={`${controls.btn} ${s.pushRight}`} onClick={onNewTask}>{strings.levelSelector.newTask}</button>
     </div>
   );
 }

@@ -129,25 +129,11 @@
   animation: flowPulse 1.7s ease-in-out infinite;
 }
 
-.loop {
-  display: grid;
-  width: 52px;
-  height: 52px;
-  place-content: center;
-  border: 1px solid color-mix(in srgb, var(--amber) 52%, transparent);
-  border-radius: 50%;
-  background: color-mix(in srgb, var(--amber) 9%, transparent);
-  color: var(--amber);
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.4px;
-  line-height: 1.1;
-}
-
 .flowCaption {
   width: 130px;
-  font-size: 9px;
+  font-size: 8px;
   line-height: 1.25;
+  padding: 0 4px 0 4px;
 }
 
 .zone {
@@ -196,7 +182,7 @@
 }
 
 .zoneBodyRow::before {
-  content: "ожидают";
+  content: attr(data-pending-label);
   color: var(--empty);
   font-size: 9px;
   letter-spacing: 0.4px;
