@@ -1,0 +1,49 @@
+/* ---------- дизайн-токены ---------- */
+:root {
+  --bg: #14161F;
+  --panel: #1B1E2B;
+  --panel-edge: #262B3D;
+  --console: #0E1017;
+  --text: #D7DAE4;
+  --dim: #7C829B;
+  --faint: #4A5068;
+  --amber: #FFC66D;
+  --kw: #C792EA;
+  --str: #C3E88D;
+  --num: #F78C6C;
+  --fn: #82AAFF;
+  --good: #5FCB79;
+  --bad: #EF6363;
+
+  /* служебные оттенки */
+  --dot: #3A4157;
+  --dot-dim: #2B3044;
+  --empty: #2E3348;
+  --track: #242938;
+  --btn-disabled: #2A2F42;
+  --on-amber: #1A1409;
+
+  --mono: 'JetBrains Mono', 'Fira Code', 'SF Mono', Consolas, monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--mono);
+}
+
+button {
+  font-family: var(--mono);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}

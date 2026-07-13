@@ -1,0 +1,16 @@
+.line {
+  white-space: pre;
+  line-height: 1.45;
+}
+
+.blank {
+  height: 1.45em;
+}
+
+.str    { color: var(--str); }
+.com    { color: var(--faint); }
+.kw     { color: var(--kw); }
+.glob   { color: var(--fn); }
+.num    { color: var(--num); }
+.fnName { color: var(--amber); }
+.method { color: var(--amber); }

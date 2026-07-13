@@ -37,8 +37,9 @@ npm run preview   # локальный просмотр прод-сборки
 ├── vite.config.js
 └── src/
     ├── main.jsx                   # точка входа React
-    ├── App.jsx                    # главный экран тренажера
-    ├── theme.js                   # дизайн-токены
+    ├── App.jsx / App.module.css   # главный экран тренажера
+    ├── styles/
+    │   └── global.css             # дизайн-токены (CSS-переменные) и базовые стили
     ├── data/
     │   ├── blocks.js              # блоки-генераторы кода задач
     │   ├── levels.js              # уровни сложности и пулы блоков
@@ -48,10 +49,10 @@ npm run preview   # локальный просмотр прод-сборки
     │   ├── sim.js                 # симуляция кадров для анимации
     │   └── random.js              # rnd / pick / shuffle
     └── components/
-        ├── EventLoopViz.jsx       # анимированная визуализация цикла событий
-        └── highlight.jsx          # подсветка синтаксиса
+        ├── EventLoopViz.jsx|.module.css   # анимированная визуализация цикла событий
+        └── highlight.jsx|.module.css      # подсветка синтаксиса
 ```
 
 ## Стек
 
-React 18 + Vite 5, без сторонних UI-библиотек.
+React 18 + Vite 5, стили — CSS-модули + CSS-переменные, без сторонних UI-библиотек.
