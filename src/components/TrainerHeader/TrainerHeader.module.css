@@ -1,0 +1,43 @@
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.kicker {
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: var(--faint);
+  text-transform: uppercase;
+}
+
+.title {
+  font-size: 22px;
+  margin: 6px 0 0;
+  font-weight: 600;
+}
+
+.titleFn {
+  color: var(--fn);
+}
+
+.titleAmber {
+  color: var(--amber);
+}
+
+.stats {
+  font-size: 12px;
+  color: var(--dim);
+  text-align: right;
+  line-height: 1.7;
+}
+
+.statAccent {
+  color: var(--amber);
+}
+
+.statText {
+  color: var(--text);
+}

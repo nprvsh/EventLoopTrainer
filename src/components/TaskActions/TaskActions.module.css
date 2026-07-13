@@ -1,0 +1,37 @@
+.actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.primary {
+  font-size: 14px;
+  font-weight: 600;
+  padding: 10px 22px;
+  border-radius: 9px;
+  border: none;
+  background: var(--amber);
+  color: var(--on-amber);
+  cursor: pointer;
+}
+
+.primary:disabled {
+  background: var(--btn-disabled);
+  color: var(--faint);
+  cursor: default;
+}
+
+.verdict {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.verdictWin {
+  color: var(--good);
+}
+
+.verdictLose {
+  color: var(--bad);
+}

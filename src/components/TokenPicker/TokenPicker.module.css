@@ -1,0 +1,43 @@
+.tokens {
+  margin: 16px 0 8px;
+}
+
+.tokensLabel {
+  font-size: 11px;
+  color: var(--faint);
+  margin-bottom: 8px;
+  letter-spacing: 1px;
+}
+
+.tokensRow {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.chip {
+  font-size: 15px;
+  font-weight: 600;
+  min-width: 44px;
+  padding: 9px 0;
+  border-radius: 9px;
+  border: 1px solid var(--panel-edge);
+  background: var(--panel);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.chip:disabled {
+  cursor: default;
+}
+
+.chip:hover:not(:disabled) {
+  border-color: var(--amber);
+  color: var(--amber);
+}
+
+.chipUsed,
+.chipUsed:disabled {
+  color: var(--faint);
+  opacity: 0.35;
+}

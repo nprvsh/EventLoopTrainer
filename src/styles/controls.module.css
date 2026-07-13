@@ -1,0 +1,21 @@
+.btn {
+  font-size: 13px;
+  padding: 7px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--panel-edge);
+  background: transparent;
+  color: var(--dim);
+  cursor: pointer;
+}
+
+.btn:hover:not(:disabled) {
+  border-color: var(--dim);
+  color: var(--text);
+}
+
+.btnActive,
+.btnActive:hover:not(:disabled) {
+  border-color: var(--amber);
+  background: color-mix(in srgb, var(--amber) 12%, transparent);
+  color: var(--amber);
+}

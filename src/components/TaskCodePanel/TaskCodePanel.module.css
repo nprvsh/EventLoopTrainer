@@ -1,0 +1,37 @@
+.codePanel {
+  background: var(--panel);
+  border: 1px solid var(--panel-edge);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.codeHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--panel-edge);
+  font-size: 11px;
+  color: var(--faint);
+}
+
+.dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--dot);
+}
+
+.fileName {
+  margin-left: 6px;
+}
+
+.codeBody {
+  padding: 16px 18px;
+  font-size: 13.5px;
+  overflow-x: auto;
+}
+
+.loading {
+  color: var(--faint);
+}

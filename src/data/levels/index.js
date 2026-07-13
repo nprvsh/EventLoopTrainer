@@ -1,6 +1,6 @@
 export const LEVELS = {
   easy: {
-    title: "Основы",
+    title: "Easy",
     desc: "синхронный код, таймеры и простые микрозадачи вперемешку",
     pool: ["sync", "iife", "timeout0", "timeoutSlow", "timeoutTwo", "micro", "qmt", "microChain"],
     // из каждого списка гарантированно берётся один блок → всегда микс микро + макро
@@ -12,7 +12,7 @@ export const LEVELS = {
     maxLogs: 6,
   },
   hard: {
-    title: "Хардкор",
+    title: "Medium",
     desc: "async/await, вложенность, цепочки и ловушки",
     pool: [
       "sync", "timeout0", "micro", "qmt", "microChain", "microChain3", "finallyChain",
@@ -29,7 +29,7 @@ export const LEVELS = {
     maxLogs: 8,
   },
   insane: {
-    title: "Собес",
+    title: "Hard",
     desc: "монструозные задачи со злых собеседований: много логов, всё вперемешку",
     pool: [
       "megaTimeout", "thenReturnThen", "asyncMega", "qmtNest", "awaitTimeoutCombo",

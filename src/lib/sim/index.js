@@ -1,4 +1,4 @@
-import { isMicroPhase, isSyncPhase } from "../data/phases.js";
+import { isMicroPhase, isSyncPhase } from "@/data";
 
 // ---------- симуляция для визуализации ----------
 // Строит массив «кадров» состояния: стек, очереди, консоль, подпись.

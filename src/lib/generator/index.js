@@ -1,6 +1,5 @@
-import { BLOCKS } from "../data/blocks.js";
-import { LEVELS } from "../data/levels.js";
-import { rnd, pick, shuffle } from "./random.js";
+import { BLOCKS, LEVELS } from "@/data";
+import { rnd, pick, shuffle } from "@/lib/random";
 
 export function buildSnippet(levelKey) {
   const lvl = LEVELS[levelKey];
@@ -71,11 +70,16 @@ export function runSnippet(code, expected) {
   });
 }
 
+/**
+ * @param {import("@/types").LevelKey} levelKey
+ * @returns {Promise<import("@/types").Task | null>}
+ */
 export async function generateTask(levelKey) {
   for (let attempt = 0; attempt < 5; attempt++) {
     const s = buildSnippet(levelKey);
     const truth = await runSnippet(s.code, s.logs.length);
     if (truth && new Set(truth).size === truth.length) {
+      /** @type {Record<string, import("@/types").PhaseId>} */
       const phaseMap = {};
       s.logs.forEach((l) => (phaseMap[l.label] = l.phase));
       return { lines: s.lines, truth, phaseMap, logs: s.logs, tokens: shuffle(truth) };
