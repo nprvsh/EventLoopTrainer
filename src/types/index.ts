@@ -11,19 +11,19 @@ export type PhaseId =
 
 export type LogRelation = "with" | "micro" | "macro";
 
-export interface TaskLog {
+export type TaskLog = {
   label: string;
   phase: PhaseId;
   parent?: string;
   rel?: LogRelation;
 }
 
-export interface BlockContext {
+export type BlockContext = {
   L: () => string;
   F: () => string;
 }
 
-export interface BlockResult {
+export type BlockResult = {
   lines: string[];
   logs: TaskLog[];
 }
@@ -31,7 +31,7 @@ export interface BlockResult {
 export type BlockFactory = (context: BlockContext) => BlockResult;
 export type BlockKey = string;
 
-export interface LevelConfig {
+export type LevelConfig = {
   title: string;
   desc: string;
   pool: BlockKey[];
@@ -40,15 +40,17 @@ export interface LevelConfig {
   maxLogs: number;
 }
 
-export type LevelKey = "easy" | "hard" | "insane";
+export type LevelKey = "easy" | "medium" | "hard";
 
-export interface Snippet {
+export type ThemeKey = "all" | "microtasks" | "timers" | "async";
+
+export type Snippet = {
   code: string;
   lines: string[];
   logs: TaskLog[];
 }
 
-export interface Task {
+export type Task = {
   lines: string[];
   truth: string[];
   phaseMap: Record<string, PhaseId>;
@@ -56,7 +58,7 @@ export interface Task {
   tokens: string[];
 }
 
-export interface Stats {
+export type Stats = {
   streak: number;
   best: number;
   solved: number;
@@ -65,11 +67,12 @@ export interface Stats {
 
 export type VisualizationZone = "stack" | "micro" | "macro" | "out";
 
-export interface SimulationStep {
+export type SimulationStep = {
   stack: string[];
   micro: string[];
   macro: string[];
   out: string[];
   note: string;
+  codeLine: number | null;
   hl: VisualizationZone | null;
 }

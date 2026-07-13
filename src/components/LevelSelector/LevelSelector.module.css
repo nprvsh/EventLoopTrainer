@@ -1,10 +1,48 @@
 .levels {
   display: flex;
-  gap: 8px;
+  gap: 12px;
   margin: 18px 0 14px;
+  flex-wrap: wrap;
+  align-items: end;
+}
+
+.section {
+  display: grid;
+  gap: 5px;
+  padding-right: 12px;
+  border-right: 1px solid var(--panel-edge);
+}
+
+.section:nth-child(2) {
+  padding-right: 0;
+  border-right: 0;
+}
+
+.label {
+  color: var(--faint);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.group {
+  display: flex;
+  gap: 4px;
   flex-wrap: wrap;
 }
 
 .pushRight {
   margin-left: auto;
+}
+
+@media (max-width: 720px) {
+  .section {
+    border-right: 0;
+    padding-right: 0;
+  }
+
+  .pushRight {
+    margin-left: 0;
+  }
 }

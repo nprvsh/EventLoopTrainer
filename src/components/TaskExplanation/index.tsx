@@ -2,7 +2,7 @@ import { PHASES } from "@/data";
 import type { Task } from "@/types";
 import s from "./TaskExplanation.module.css";
 
-interface TaskExplanationProps {
+type TaskExplanationProps = {
   task: Task;
 }
 

@@ -11,7 +11,7 @@ export const LEVELS = {
     count: [3, 4],
     maxLogs: 6,
   },
-  hard: {
+  medium: {
     title: "Medium",
     desc: "async/await, вложенность, цепочки и ловушки",
     pool: [
@@ -28,7 +28,7 @@ export const LEVELS = {
     count: [4, 5],
     maxLogs: 8,
   },
-  insane: {
+  hard: {
     title: "Hard",
     desc: "монструозные задачи со злых собеседований: много логов, всё вперемешку",
     pool: [
@@ -45,5 +45,24 @@ export const LEVELS = {
     ],
     count: [4, 5],
     maxLogs: 16,
+  },
+};
+
+export const THEMES = {
+  all: {
+    title: "Все темы",
+    blocks: null,
+  },
+  microtasks: {
+    title: "Микрозадачи",
+    blocks: ["micro", "qmt", "microChain", "microChain3", "finallyChain", "microWithMacro", "microMacroSandwich", "qmtNest", "thenReturnThen", "microMacroMicro", "timeoutChainMicro", "executorFull"],
+  },
+  timers: {
+    title: "Таймеры",
+    blocks: ["timeout0", "timeoutSlow", "timeoutTwo", "nestedTimeout", "doubleNestedTimeout", "macroWithMicro", "microWithMacro", "awaitThenTimeout", "timeoutChainMicro", "executorTimeout", "microMacroSandwich", "megaTimeout", "microMacroMicro", "timeoutMicroThenMacro", "awaitTimeoutCombo"],
+  },
+  async: {
+    title: "async / await",
+    blocks: ["asyncFn", "asyncIIFE", "asyncTwoAwaits", "awaitThenTimeout", "asyncMega", "awaitTimeoutCombo"],
   },
 };

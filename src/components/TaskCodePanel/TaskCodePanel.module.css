@@ -35,3 +35,15 @@
 .loading {
   color: var(--faint);
 }
+
+.lineActive {
+  background: color-mix(in srgb, var(--amber) 13%, transparent);
+  box-shadow: inset 2px 0 var(--amber);
+  border-radius: 2px;
+  animation: highlightLine 0.25s ease both;
+}
+
+@keyframes highlightLine {
+  from { opacity: 0.45; }
+  to { opacity: 1; }
+}

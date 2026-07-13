@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { generateTask } from "./lib";
+import { generateTask } from "@/lib";
 import {
   AnswerConsole,
   EventLoopViz,
@@ -9,19 +9,38 @@ import {
   TaskExplanation,
   TokenPicker,
   TrainerHeader,
-} from "./components";
-import type { LevelKey, Stats, Task } from "./types";
+} from "@/components";
+import type { LevelKey, Stats, Task, ThemeKey } from "@/types";
 import s from "./App.module.css";
+
+const STATS_STORAGE_KEY = "event-loop-trainer:stats";
+const MISTAKES_STORAGE_KEY = "event-loop-trainer:mistakes";
+const emptyStats: Stats = { streak: 0, best: 0, solved: 0, total: 0 };
 
 export default function App() {
   const [level, setLevel] = useState<LevelKey>("easy");
+  const [theme, setTheme] = useState<ThemeKey>("all");
   const [task, setTask] = useState<Task | null>(null);
   const [answer, setAnswer] = useState<number[]>([]);
   const [checked, setChecked] = useState(false);
   const [result, setResult] = useState<boolean[] | null>(null);
-  const [stats, setStats] = useState<Stats>({ streak: 0, best: 0, solved: 0, total: 0 });
-  const [reveal, setReveal] = useState(false);
-  const [viz, setViz] = useState(false);
+  const [stats, setStats] = useState<Stats>(() => {
+    try {
+      return JSON.parse(localStorage.getItem(STATS_STORAGE_KEY) ?? "") as Stats;
+    } catch {
+      return emptyStats;
+    }
+  });
+  const [mistakes, setMistakes] = useState<Task[]>(() => {
+    try {
+      return JSON.parse(localStorage.getItem(MISTAKES_STORAGE_KEY) ?? "[]") as Task[];
+    } catch {
+      return [];
+    }
+  });
+  const [isExplanationVisible, setIsExplanationVisible] = useState(false);
+  const [isVisualizationVisible, setIsVisualizationVisible] = useState(false);
+  const [activeCodeLine, setActiveCodeLine] = useState<number | null>(null);
   const [taskRequest, setTaskRequest] = useState(0);
 
   const requestNewTask = () => {
@@ -29,22 +48,31 @@ export default function App() {
     setAnswer([]);
     setChecked(false);
     setResult(null);
-    setReveal(false);
-    setViz(false);
+    setIsExplanationVisible(false);
+    setIsVisualizationVisible(false);
+    setActiveCodeLine(null);
     setTaskRequest((request) => request + 1);
   };
 
   useEffect(() => {
     let cancelled = false;
 
-    generateTask(level).then((nextTask) => {
+    generateTask(level, theme).then((nextTask) => {
       if (!cancelled) setTask(nextTask);
     });
 
     return () => {
       cancelled = true;
     };
-  }, [level, taskRequest]);
+  }, [level, theme, taskRequest]);
+
+  useEffect(() => {
+    localStorage.setItem(STATS_STORAGE_KEY, JSON.stringify(stats));
+  }, [stats]);
+
+  useEffect(() => {
+    localStorage.setItem(MISTAKES_STORAGE_KEY, JSON.stringify(mistakes));
+  }, [mistakes]);
 
   const place = (index: number) => {
     if (!checked) setAnswer((currentAnswer) => [...currentAnswer, index]);
@@ -62,6 +90,12 @@ export default function App() {
     const isWin = nextResult.every(Boolean);
     setResult(nextResult);
     setChecked(true);
+    if (!isWin) {
+      setMistakes((currentMistakes) => [
+        task,
+        ...currentMistakes.filter((savedTask) => savedTask.lines.join("\n") !== task.lines.join("\n")),
+      ].slice(0, 10));
+    }
     setStats((currentStats) => {
       const streak = isWin ? currentStats.streak + 1 : 0;
       return {
@@ -76,6 +110,18 @@ export default function App() {
   const usedIndices = new Set(answer);
   const isComplete = task !== null && answer.length === task.truth.length;
   const isWin = checked && result !== null && result.every(Boolean);
+  const retryLastMistake = () => {
+    const mistake = mistakes[0];
+    if (!mistake) return;
+
+    setTask(mistake);
+    setAnswer([]);
+    setChecked(false);
+    setResult(null);
+    setIsExplanationVisible(false);
+    setIsVisualizationVisible(false);
+    setActiveCodeLine(null);
+  };
 
   return (
     <div className={s.page}>
@@ -83,13 +129,19 @@ export default function App() {
         <TrainerHeader stats={stats} />
         <LevelSelector
           level={level}
+          theme={theme}
           onLevelChange={(nextLevel) => {
             setLevel(nextLevel);
+            if (nextLevel === "easy" && theme === "async") setTheme("all");
+            requestNewTask();
+          }}
+          onThemeChange={(nextTheme) => {
+            setTheme(nextTheme);
             requestNewTask();
           }}
           onNewTask={requestNewTask}
         />
-        <TaskCodePanel task={task} />
+        <TaskCodePanel task={task} activeLine={activeCodeLine} />
         {task && <TokenPicker tokens={task.tokens} usedIndices={usedIndices} disabled={checked} onPlace={place} />}
         {task && <AnswerConsole task={task} answer={answer} checked={checked} result={result} onUnplace={unplace} />}
         {task && (
@@ -98,17 +150,22 @@ export default function App() {
             checked={checked}
             done={isComplete}
             isWin={isWin}
-            isVisualizationVisible={viz}
-            isExplanationVisible={reveal}
+            isVisualizationVisible={isVisualizationVisible}
+            isExplanationVisible={isExplanationVisible}
             onCheck={check}
             onReset={() => setAnswer([])}
             onNextTask={requestNewTask}
-            onToggleVisualization={() => setViz((value) => !value)}
-            onToggleExplanation={() => setReveal((value) => !value)}
+            onRetryLastMistake={retryLastMistake}
+            mistakesCount={mistakes.length}
+            onToggleVisualization={() => setIsVisualizationVisible((value) => {
+              if (value) setActiveCodeLine(null);
+              return !value;
+            })}
+            onToggleExplanation={() => setIsExplanationVisible((value) => !value)}
           />
         )}
-        {task && checked && viz && <EventLoopViz task={task} />}
-        {task && checked && reveal && <TaskExplanation task={task} />}
+        {task && checked && isVisualizationVisible && <EventLoopViz task={task} onStepChange={setActiveCodeLine} />}
+        {task && checked && isExplanationVisible && <TaskExplanation task={task} />}
       </div>
     </div>
   );

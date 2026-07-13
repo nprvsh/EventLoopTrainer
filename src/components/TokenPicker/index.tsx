@@ -1,6 +1,6 @@
 import s from "./TokenPicker.module.css";
 
-interface TokenPickerProps {
+type TokenPickerProps = {
   tokens: string[];
   usedIndices: Set<number>;
   disabled: boolean;

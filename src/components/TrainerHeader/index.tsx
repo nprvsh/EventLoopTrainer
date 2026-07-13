@@ -1,7 +1,7 @@
 import type { Stats } from "@/types";
 import s from "./TrainerHeader.module.css";
 
-interface TrainerHeaderProps {
+type TrainerHeaderProps = {
   stats: Stats;
 }
 

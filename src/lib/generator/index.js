@@ -1,51 +1,66 @@
-import { BLOCKS, LEVELS } from "@/data";
+import { BLOCKS, LEVELS, THEMES } from "@/data";
 import { rnd, pick, shuffle } from "@/lib/random";
 
-export function buildSnippet(levelKey) {
-  const lvl = LEVELS[levelKey];
+export function buildSnippet(levelKey, themeKey = "all") {
+  const level = LEVELS[levelKey];
+  const theme = THEMES[themeKey];
+  const pool = theme.blocks ? level.pool.filter((key) => theme.blocks.includes(key)) : level.pool;
+  const seedPools = theme.blocks
+    ? level.seed.map((seedPool) => seedPool.filter((key) => theme.blocks.includes(key))).filter((seedPool) => seedPool.length)
+    : level.seed;
 
-  for (let tries = 0; tries < 60; tries++) {
-    const count = lvl.count[0] + rnd(lvl.count[1] - lvl.count[0] + 1);
+  for (let attempt = 0; attempt < 60; attempt++) {
+    const count = level.count[0] + rnd(level.count[1] - level.count[0] + 1);
 
     // по одному гарантированному блоку из каждого seed-пула
-    const chosen = lvl.seed.map((s) => pick(s));
-    while (chosen.length < count) {
-      const b = pick(lvl.pool);
-      if (chosen.filter((x) => x === b).length < 2) chosen.push(b);
+    const selectedBlockKeys = seedPools.map((seedPool) => pick(seedPool));
+    while (selectedBlockKeys.length < count) {
+      const blockKey = pick(pool);
+      if (selectedBlockKeys.filter((key) => key === blockKey).length < 2) {
+        selectedBlockKeys.push(blockKey);
+      }
     }
-    const order = shuffle(chosen);
+    const blockOrder = shuffle(selectedBlockKeys);
 
-    let li = 0, fi = 0;
-    const ctx = {
-      L: () => String.fromCharCode(65 + li++),
-      F: () => `run${++fi}`,
+    let logLabelIndex = 0;
+    let functionIndex = 0;
+    const blockContext = {
+      L: () => String.fromCharCode(65 + logLabelIndex++),
+      F: () => `run${++functionIndex}`,
     };
 
     const lines = [];
     const logs = [];
-    order.forEach((key, i) => {
-      const b = BLOCKS[key](ctx);
-      lines.push(...b.lines);
-      logs.push(...b.logs);
-      if (i < order.length - 1) lines.push("");
+    blockOrder.forEach((blockKey, index) => {
+      const block = BLOCKS[blockKey](blockContext);
+      lines.push(...block.lines);
+      logs.push(...block.logs);
+      if (index < blockOrder.length - 1) lines.push("");
     });
 
-    if (logs.length <= lvl.maxLogs) return { code: lines.join("\n"), lines, logs };
+    if (logs.length <= level.maxLogs) return { code: lines.join("\n"), lines, logs };
   }
   // fallback: минимальный вариант
-  return buildMinimal(lvl);
+  return buildMinimal(seedPools);
 }
 
-function buildMinimal(lvl) {
-  let li = 0, fi = 0;
-  const ctx = { L: () => String.fromCharCode(65 + li++), F: () => `run${++fi}` };
-  const lines = [], logs = [];
-  lvl.seed.forEach((s, i) => {
-    const b = BLOCKS[pick(s)](ctx);
-    lines.push(...b.lines);
-    logs.push(...b.logs);
-    if (i < lvl.seed.length - 1) lines.push("");
+function buildMinimal(seedPools) {
+  let logLabelIndex = 0;
+  let functionIndex = 0;
+  const blockContext = {
+    L: () => String.fromCharCode(65 + logLabelIndex++),
+    F: () => `run${++functionIndex}`,
+  };
+  const lines = [];
+  const logs = [];
+
+  seedPools.forEach((seedPool, index) => {
+    const block = BLOCKS[pick(seedPool)](blockContext);
+    lines.push(...block.lines);
+    logs.push(...block.logs);
+    if (index < seedPools.length - 1) lines.push("");
   });
+
   return { code: lines.join("\n"), lines, logs };
 }
 
@@ -72,17 +87,18 @@ export function runSnippet(code, expected) {
 
 /**
  * @param {import("@/types").LevelKey} levelKey
+ * @param {import("@/types").ThemeKey} themeKey
  * @returns {Promise<import("@/types").Task | null>}
  */
-export async function generateTask(levelKey) {
+export async function generateTask(levelKey, themeKey = "all") {
   for (let attempt = 0; attempt < 5; attempt++) {
-    const s = buildSnippet(levelKey);
-    const truth = await runSnippet(s.code, s.logs.length);
+    const snippet = buildSnippet(levelKey, themeKey);
+    const truth = await runSnippet(snippet.code, snippet.logs.length);
     if (truth && new Set(truth).size === truth.length) {
       /** @type {Record<string, import("@/types").PhaseId>} */
       const phaseMap = {};
-      s.logs.forEach((l) => (phaseMap[l.label] = l.phase));
-      return { lines: s.lines, truth, phaseMap, logs: s.logs, tokens: shuffle(truth) };
+      snippet.logs.forEach((log) => (phaseMap[log.label] = log.phase));
+      return { lines: snippet.lines, truth, phaseMap, logs: snippet.logs, tokens: shuffle(truth) };
     }
   }
   return null;
