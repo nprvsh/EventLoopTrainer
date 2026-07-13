@@ -3,7 +3,9 @@ dist/
 coverage/
 .eslintcache
 *.tsbuildinfo
+.claude/*
 .claude/
+*.claude/
 *.local
 .env
 .env.*
