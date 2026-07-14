@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { strings } from "@/config/strings";
+import { useStrings } from "@/config/strings";
 import { buildSim } from "@/lib";
 import type { CodeLineState, SimulationStep, Task } from "@/types";
 import s from "./EventLoopViz.module.css";
@@ -22,7 +22,8 @@ type EventLoopVizProps = {
 };
 
 export default function EventLoopViz({ task, onStepChange }: EventLoopVizProps) {
-  const steps = useMemo<SimulationStep[]>(() => buildSim(task) as SimulationStep[], [task]);
+  const strings = useStrings();
+  const steps = useMemo<SimulationStep[]>(() => buildSim(task, strings.sim) as SimulationStep[], [task, strings.sim]);
   const [index, setIndex] = useState(0);
   const [playing, setPlaying] = useState(true);
   const isLastStep = index >= steps.length - 1;

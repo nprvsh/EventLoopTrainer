@@ -2,7 +2,7 @@ import { isMicroPhase, isSyncPhase } from "@/data";
 
 // ---------- симуляция для визуализации ----------
 // Строит массив «кадров» состояния: стек, очереди, консоль, подпись.
-export function buildSim(task) {
+export function buildSim(task, strings) {
   const truthIndexByLabel = {};
   task.truth.forEach((label, index) => (truthIndexByLabel[label] = index));
   const codeLineForLabel = (label) => {
@@ -49,15 +49,15 @@ export function buildSim(task) {
 
   // 1. фаза скрипта
   state.stack = ["script"];
-  captureStep("Скрипт выполняется сверху вниз", "stack");
+  captureStep(strings.scriptStart, "stack");
   for (const log of task.logs) {
     if (log.parent) continue;
     if (isSyncPhase(log.phase)) {
       state.out.push(log.label);
       captureStep(
         log.phase === "executor"
-          ? `new Promise: executor выполняется синхронно → лог '${log.label}'`
-          : `console.log('${log.label}') — синхронно, прямо в стеке`,
+          ? strings.executor(log.label)
+          : strings.syncLog(log.label),
         "out",
         log.label,
         "executing"
@@ -66,8 +66,8 @@ export function buildSim(task) {
       state.micro.push(groupIdByLabel[log.label]);
       captureStep(
         log.phase === "awaitAfter"
-          ? `await приостанавливает функцию: продолжение '${log.label}' → микрозадачи`
-          : `Колбэк ${formatGroupLabels(groupIdByLabel[log.label])} → очередь микрозадач`,
+          ? strings.awaitQueued(log.label)
+          : strings.microQueued(formatGroupLabels(groupIdByLabel[log.label])),
         "micro",
         log.label,
         "queued"
@@ -76,8 +76,8 @@ export function buildSim(task) {
       state.macro.push(groupIdByLabel[log.label]);
       captureStep(
         log.phase === "macroSlow"
-          ? `setTimeout(…, 100): колбэк '${log.label}' → очередь задач (сработает позже)`
-          : `setTimeout регистрирует колбэк ${formatGroupLabels(groupIdByLabel[log.label])} → очередь задач`,
+          ? strings.slowTimerQueued(log.label)
+          : strings.timerQueued(formatGroupLabels(groupIdByLabel[log.label])),
         "macro",
         log.label,
         "queued"
@@ -85,7 +85,7 @@ export function buildSim(task) {
     }
   }
   state.stack = [];
-  captureStep("Скрипт закончился — стек вызовов пуст", "stack");
+  captureStep(strings.scriptEnd, "stack");
 
   // выполнение группы-колбэка
   const runGroup = (groupId, note, highlightedZone) => {
@@ -100,8 +100,8 @@ export function buildSim(task) {
           state.micro.push(groupIdByLabel[spawnedLog.label]);
           captureStep(
             spawnedLog.phase === "awaitAfter"
-              ? `Следующий await: продолжение '${spawnedLog.label}' → очередь микрозадач`
-              : `Изнутри '${label}': колбэк '${spawnedLog.label}' → очередь микрозадач`,
+              ? strings.nextAwaitQueued(spawnedLog.label)
+              : strings.nestedMicroQueued(label, spawnedLog.label),
             "micro",
             spawnedLog.label,
             "queued"
@@ -109,7 +109,7 @@ export function buildSim(task) {
         } else {
           state.macro.push(groupIdByLabel[spawnedLog.label]);
           captureStep(
-            `Изнутри '${label}': новый setTimeout '${spawnedLog.label}' → очередь задач`,
+            strings.nestedTimerQueued(label, spawnedLog.label),
             "macro",
             spawnedLog.label,
             "queued"
@@ -138,7 +138,7 @@ export function buildSim(task) {
       const groupId = takeNextGroup(state.micro);
       runGroup(
         groupId,
-        `Стек пуст → микрозадача ${formatGroupLabels(groupId)} выполняется: console.log`,
+        strings.microRunning(formatGroupLabels(groupId)),
         "out"
       );
     }
@@ -146,11 +146,11 @@ export function buildSim(task) {
       const groupId = takeNextGroup(state.macro);
       runGroup(
         groupId,
-        `Микрозадач нет → тик цикла: задача ${formatGroupLabels(groupId)} из очереди`,
+        strings.macroRunning(formatGroupLabels(groupId)),
         "out"
       );
     }
   }
-  captureStep("Очереди пусты — программа отработала ✓", "out");
+  captureStep(strings.complete, "out");
   return steps;
 }

@@ -1,4 +1,4 @@
-import { strings } from "@/config/strings";
+import { useStrings } from "@/config/strings";
 import controls from "@/styles/controls.module.css";
 import s from "./TaskActions.module.css";
 
@@ -33,6 +33,8 @@ export default function TaskActions({
   onToggleVisualization,
   onToggleExplanation,
 }: TaskActionsProps) {
+  const strings = useStrings();
+
   return (
     <div className={s.actions}>
       {!checked ? (

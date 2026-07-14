@@ -1,5 +1,4 @@
-import { strings } from "@/config/strings";
-import { PHASES } from "@/data";
+import { useStrings } from "@/config/strings";
 import type { Task } from "@/types";
 import s from "./TaskExplanation.module.css";
 
@@ -8,11 +7,13 @@ type TaskExplanationProps = {
 }
 
 export default function TaskExplanation({ task }: TaskExplanationProps) {
+  const strings = useStrings();
+
   return (
     <div className={s.reveal}>
       <div className={s.revealTitle}>{strings.taskExplanation.title}</div>
       {task.truth.map((token, index) => {
-        const phase = PHASES[task.phaseMap[token]] ?? PHASES.sync;
+        const phase = strings.phases[task.phaseMap[token]] ?? strings.phases.sync;
         return <div key={index} className={s.revealRow}><span className={s.revealNum}>{index + 1}.</span><span className={s.revealTok}>&apos;{token}&apos;</span><span className={s.revealPhase}>{phase.name}</span><span className={s.revealHint}>{phase.hint}</span></div>;
       })}
       <div className={s.rule}>

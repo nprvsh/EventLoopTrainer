@@ -45,6 +45,7 @@ export type LevelKey = "easy" | "medium" | "hard";
 export type ThemeKey = "all" | "microtasks" | "timers" | "async";
 
 export type ColorThemeKey = "midnight" | "ocean" | "forest" | "rose";
+export type LocaleKey = "ru" | "en";
 
 export type Snippet = {
   code: string;

@@ -1,21 +1,24 @@
-import { strings } from "@/config/strings";
-import type { ColorThemeKey, Stats } from "@/types";
+import { useStrings } from "@/config/strings";
+import type { ColorThemeKey, LocaleKey, Stats } from "@/types";
 import s from "./TrainerHeader.module.css";
 
 type TrainerHeaderProps = {
   stats: Stats;
   colorTheme: ColorThemeKey;
   onColorThemeChange: (theme: ColorThemeKey) => void;
+  locale: LocaleKey;
+  onLocaleChange: (locale: LocaleKey) => void;
 }
 
-const colorThemeOptions: { key: ColorThemeKey; label: string }[] = [
-  { key: "midnight", label: strings.header.colorThemes.midnight },
-  { key: "ocean", label: strings.header.colorThemes.ocean },
-  { key: "forest", label: strings.header.colorThemes.forest },
-  { key: "rose", label: strings.header.colorThemes.rose },
-];
+export default function TrainerHeader({ stats, colorTheme, onColorThemeChange, locale, onLocaleChange }: TrainerHeaderProps) {
+  const strings = useStrings();
+  const colorThemeOptions: { key: ColorThemeKey; label: string }[] = [
+    { key: "midnight", label: strings.header.colorThemes.midnight },
+    { key: "ocean", label: strings.header.colorThemes.ocean },
+    { key: "forest", label: strings.header.colorThemes.forest },
+    { key: "rose", label: strings.header.colorThemes.rose },
+  ];
 
-export default function TrainerHeader({ stats, colorTheme, onColorThemeChange }: TrainerHeaderProps) {
   return (
     <div className={s.header}>
       <div>
@@ -24,6 +27,19 @@ export default function TrainerHeader({ stats, colorTheme, onColorThemeChange }:
       </div>
       <div className={s.meta}>
         <div className={s.appearanceControls}>
+          <div className={s.languagePicker} aria-label={strings.header.languageAriaLabel}>
+            {(["ru", "en"] as const).map((language) => (
+              <button
+                key={language}
+                type="button"
+                className={`${s.languageButton} ${locale === language ? s.languageButtonActive : ""}`}
+                aria-pressed={locale === language}
+                onClick={() => onLocaleChange(language)}
+              >
+                {language.toUpperCase()}
+              </button>
+            ))}
+          </div>
           <div className={s.themePicker} aria-label={strings.header.colorThemeAriaLabel}>
             {colorThemeOptions.map(({ key, label }) => (
               <button

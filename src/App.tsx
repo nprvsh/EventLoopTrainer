@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import type { CSSProperties } from "react";
-import { strings } from "@/config/strings";
+import { localizedStrings, StringsProvider } from "@/config/strings";
 import { generateTask } from "@/lib";
 import {
   AnswerConsole,
@@ -12,12 +12,13 @@ import {
   TokenPicker,
   TrainerHeader,
 } from "@/components";
-import type { CodeLineState, ColorThemeKey, LevelKey, Stats, Task, ThemeKey } from "@/types";
+import type { CodeLineState, ColorThemeKey, LevelKey, LocaleKey, Stats, Task, ThemeKey } from "@/types";
 import s from "./App.module.css";
 
 const STATS_STORAGE_KEY = "event-loop-trainer:stats";
 const MISTAKES_STORAGE_KEY = "event-loop-trainer:mistakes";
 const COLOR_THEME_STORAGE_KEY = "event-loop-trainer:color-theme";
+const LOCALE_STORAGE_KEY = "event-loop-trainer:locale";
 const emptyStats: Stats = { streak: 0, best: 0, solved: 0, total: 0 };
 const colorThemes: ColorThemeKey[] = ["midnight", "ocean", "forest", "rose"];
 type QueueFlight = {
@@ -43,6 +44,11 @@ export default function App() {
   const [colorTheme, setColorTheme] = useState<ColorThemeKey>(() => {
     const savedTheme = localStorage.getItem(COLOR_THEME_STORAGE_KEY);
     return colorThemes.includes(savedTheme as ColorThemeKey) ? savedTheme as ColorThemeKey : "midnight";
+  });
+  const [locale, setLocale] = useState<LocaleKey>(() => {
+    const savedLocale = localStorage.getItem(LOCALE_STORAGE_KEY);
+    if (savedLocale === "ru" || savedLocale === "en") return savedLocale;
+    return navigator.language.toLowerCase().startsWith("ru") ? "ru" : "en";
   });
   const [task, setTask] = useState<Task | null>(null);
   const [answer, setAnswer] = useState<number[]>([]);
@@ -111,6 +117,11 @@ export default function App() {
     themeColor?.setAttribute("content", themeColors[colorTheme]);
   }, [colorTheme]);
 
+  useEffect(() => {
+    document.documentElement.lang = locale;
+    localStorage.setItem(LOCALE_STORAGE_KEY, locale);
+  }, [locale]);
+
   const place = (index: number) => {
     if (!checked) setAnswer((currentAnswer) => [...currentAnswer, index]);
   };
@@ -178,13 +189,18 @@ export default function App() {
     });
   }, [task]);
 
+  const strings = localizedStrings[locale];
+
   return (
-    <div className={s.page}>
+    <StringsProvider value={strings}>
+      <div className={s.page}>
       <div className={s.wrap}>
         <TrainerHeader
           stats={stats}
           colorTheme={colorTheme}
           onColorThemeChange={setColorTheme}
+          locale={locale}
+          onLocaleChange={setLocale}
         />
         <LevelSelector
           level={level}
@@ -278,6 +294,7 @@ export default function App() {
           {queueFlight.label}
         </span>
       )}
-    </div>
+      </div>
+    </StringsProvider>
   );
 }

@@ -50,6 +50,40 @@
   align-items: center;
 }
 
+.languagePicker {
+  display: flex;
+  gap: 2px;
+  padding: 2px;
+  border: 1px solid var(--panel-edge);
+  border-radius: 5px;
+  background: var(--panel);
+}
+
+.languageButton {
+  min-width: 28px;
+  height: 20px;
+  padding: 0 5px;
+  border: 0;
+  border-radius: 3px;
+  background: transparent;
+  color: var(--dim);
+  font: inherit;
+  font-size: 10px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.languageButton:hover,
+.languageButtonActive {
+  background: var(--panel-edge);
+  color: var(--text);
+}
+
+.languageButton:focus-visible {
+  outline: 2px solid var(--amber);
+  outline-offset: 2px;
+}
+
 .themeButton {
   display: grid;
   place-items: center;

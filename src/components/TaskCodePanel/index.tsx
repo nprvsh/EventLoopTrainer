@@ -1,6 +1,6 @@
 import { useEffect, useRef, type CSSProperties } from "react";
 import { highlightLine } from "@/components/Highlight";
-import { strings } from "@/config/strings";
+import { useStrings } from "@/config/strings";
 import type { CodeLineState, Task } from "@/types";
 import s from "./TaskCodePanel.module.css";
 
@@ -12,6 +12,7 @@ type TaskCodePanelProps = {
 }
 
 export default function TaskCodePanel({ task, activeLine = null, activeLineState = null, onQueueEntry }: TaskCodePanelProps) {
+  const strings = useStrings();
   const codeBodyRef = useRef<HTMLDivElement>(null);
   const hasActiveLine = activeLine !== null && activeLineState !== null;
   const highlightClass = activeLineState === "queued" ? s.lineQueued : s.lineExecuting;

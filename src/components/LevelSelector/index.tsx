@@ -1,4 +1,4 @@
-import { strings } from "@/config/strings";
+import { useStrings } from "@/config/strings";
 import { LEVELS, THEMES } from "@/data";
 import controls from "@/styles/controls.module.css";
 import type { LevelKey, ThemeKey } from "@/types";
@@ -13,6 +13,7 @@ type LevelSelectorProps = {
 }
 
 export default function LevelSelector({ level, theme, onLevelChange, onThemeChange, onNewTask }: LevelSelectorProps) {
+  const strings = useStrings();
   const currentLevel = LEVELS[level];
 
   return (
@@ -21,7 +22,7 @@ export default function LevelSelector({ level, theme, onLevelChange, onThemeChan
         <span className={s.label}>{strings.levelSelector.level}</span>
         <div className={s.group} aria-label={strings.levelSelector.level}>
           {Object.entries(LEVELS).map(([key, config]) => (
-            <button key={key} className={`${controls.btn} ${level === key ? controls.btnActive : ""}`} onClick={() => onLevelChange(key as LevelKey)} title={config.desc}>
+            <button key={key} className={`${controls.btn} ${level === key ? controls.btnActive : ""}`} onClick={() => onLevelChange(key as LevelKey)} title={strings.levels[key as LevelKey].description}>
               {config.title}
             </button>
           ))}
@@ -38,9 +39,9 @@ export default function LevelSelector({ level, theme, onLevelChange, onThemeChan
                 className={`${controls.btn} ${theme === key ? controls.btnActive : ""}`}
                 disabled={!available}
                 onClick={() => onThemeChange(key as ThemeKey)}
-                title={available ? strings.levelSelector.themeTitle(config.title) : strings.levelSelector.unavailableThemeTitle}
+                title={available ? strings.levelSelector.themeTitle(strings.themes[key as ThemeKey]) : strings.levelSelector.unavailableThemeTitle}
               >
-                {config.title}
+                {strings.themes[key as ThemeKey]}
               </button>
             );
           })}

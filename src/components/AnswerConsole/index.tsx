@@ -1,4 +1,4 @@
-import { strings } from "@/config/strings";
+import { useStrings } from "@/config/strings";
 import type { Task } from "@/types";
 import s from "./AnswerConsole.module.css";
 
@@ -17,6 +17,8 @@ export default function AnswerConsole({
   result,
   onUnplace,
 }: AnswerConsoleProps) {
+  const strings = useStrings();
+
   return (
     <div className={s.consoleBox}>
       <div className={s.consoleHeader}>{strings.answerConsole.title}</div>
