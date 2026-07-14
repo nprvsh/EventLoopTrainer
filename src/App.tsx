@@ -5,6 +5,7 @@ import { generateTask } from "@/lib";
 import {
   AnswerConsole,
   EventLoopViz,
+  EventLoopVizIdle,
   LevelSelector,
   TaskActions,
   TaskCodePanel,
@@ -74,9 +75,11 @@ export default function App() {
   const [activeCodeLineState, setActiveCodeLineState] = useState<CodeLineState | null>(null);
   const [queueFlight, setQueueFlight] = useState<QueueFlight | null>(null);
   const [taskRequest, setTaskRequest] = useState(0);
+  const [hasTaskLoadError, setHasTaskLoadError] = useState(false);
 
   const requestNewTask = () => {
     setTask(null);
+    setHasTaskLoadError(false);
     setAnswer([]);
     setChecked(false);
     setResult(null);
@@ -91,9 +94,15 @@ export default function App() {
   useEffect(() => {
     let cancelled = false;
 
-    generateTask(level, theme).then((nextTask) => {
-      if (!cancelled) setTask(nextTask);
-    });
+    generateTask(level, theme)
+      .then((nextTask) => {
+        if (cancelled) return;
+        setTask(nextTask);
+        setHasTaskLoadError(nextTask === null);
+      })
+      .catch(() => {
+        if (!cancelled) setHasTaskLoadError(true);
+      });
 
     return () => {
       cancelled = true;
@@ -217,64 +226,63 @@ export default function App() {
           onNewTask={requestNewTask}
         />
         <main className={s.workspace}>
-          <section className={s.answerColumn} aria-label={strings.app.answerColumn}>
-            <h2 className={s.columnTitle}>{strings.app.answerColumn}</h2>
-            {task && <TokenPicker tokens={task.tokens} usedIndices={usedIndices} disabled={checked} onPlace={place} />}
-            {task && <AnswerConsole task={task} answer={answer} checked={checked} result={result} onUnplace={unplace} />}
-            {task && (
-              <TaskActions
-                answer={answer}
-                checked={checked}
-                done={isComplete}
-                isWin={isWin}
-                isVisualizationVisible={isVisualizationVisible}
-                isExplanationVisible={isExplanationVisible}
-                onCheck={check}
-                onReset={() => setAnswer([])}
-                onNextTask={requestNewTask}
-                onRetryLastMistake={retryLastMistake}
-                mistakesCount={mistakes.length}
-                onToggleVisualization={() => setIsVisualizationVisible((value) => {
-                  if (value) {
-                    setActiveCodeLine(null);
-                    setActiveCodeLineState(null);
-                    setQueueFlight(null);
-                  }
-                  return !value;
-                })}
-                onToggleExplanation={() => setIsExplanationVisible((value) => !value)}
-              />
-            )}
-          </section>
-
           <section className={s.codeColumn} aria-label={strings.app.codeColumnAriaLabel}>
             <h2 className={s.columnTitle}>{strings.app.codeColumn}</h2>
             <TaskCodePanel
               task={task}
+              loadError={hasTaskLoadError}
               activeLine={activeCodeLine}
               activeLineState={activeCodeLineState}
               onQueueEntry={animateQueueEntry}
             />
           </section>
 
-          <section className={s.visualizationColumn} aria-label={strings.app.visualizationColumnAriaLabel}>
-            <h2 className={s.columnTitle}>{strings.app.visualizationColumn}</h2>
-            {task && checked && isVisualizationVisible ? (
-              <EventLoopViz
-                task={task}
-                onStepChange={(line, state) => {
-                  setActiveCodeLine(line);
-                  setActiveCodeLineState(state);
-                }}
-              />
-            ) : (
-              <div className={s.visualizationPlaceholder}>
-                {checked
-                  ? strings.app.visualizationAfterCheck
-                  : strings.app.visualizationBeforeCheck}
-              </div>
-            )}
-          </section>
+          <div className={s.rightColumn}>
+            <section className={s.visualizationColumn} aria-label={strings.app.visualizationColumnAriaLabel}>
+              <h2 className={s.columnTitle}>{strings.app.visualizationColumn}</h2>
+              {task && checked && isVisualizationVisible ? (
+                <EventLoopViz
+                  task={task}
+                  onStepChange={(line, state) => {
+                    setActiveCodeLine(line);
+                    setActiveCodeLineState(state);
+                  }}
+                />
+              ) : (
+                <EventLoopVizIdle message={checked ? strings.app.visualizationAfterCheck : strings.app.visualizationBeforeCheck} />
+              )}
+            </section>
+
+            <section className={s.answerColumn} aria-label={strings.app.answerColumn}>
+              <h2 className={s.columnTitle}>{strings.app.answerColumn}</h2>
+              {task && <TokenPicker tokens={task.tokens} usedIndices={usedIndices} disabled={checked} onPlace={place} />}
+              {task && <AnswerConsole task={task} answer={answer} checked={checked} result={result} onUnplace={unplace} />}
+              {task && (
+                <TaskActions
+                  answer={answer}
+                  checked={checked}
+                  done={isComplete}
+                  isWin={isWin}
+                  isVisualizationVisible={isVisualizationVisible}
+                  isExplanationVisible={isExplanationVisible}
+                  onCheck={check}
+                  onReset={() => setAnswer([])}
+                  onNextTask={requestNewTask}
+                  onRetryLastMistake={retryLastMistake}
+                  mistakesCount={mistakes.length}
+                  onToggleVisualization={() => setIsVisualizationVisible((value) => {
+                    if (value) {
+                      setActiveCodeLine(null);
+                      setActiveCodeLineState(null);
+                      setQueueFlight(null);
+                    }
+                    return !value;
+                  })}
+                  onToggleExplanation={() => setIsExplanationVisible((value) => !value)}
+                />
+              )}
+            </section>
+          </div>
         </main>
         {task && checked && isExplanationVisible && <TaskExplanation task={task} />}
       </div>

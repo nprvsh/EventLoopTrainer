@@ -1,7 +1,5 @@
 export const LEVELS = {
   easy: {
-    title: "Easy",
-    desc: "синхронный код, таймеры и простые микрозадачи вперемешку",
     pool: ["sync", "iife", "timeout0", "timeoutSlow", "timeoutTwo", "micro", "qmt", "microChain"],
     // из каждого списка гарантированно берётся один блок → всегда микс микро + макро
     seed: [
@@ -12,8 +10,6 @@ export const LEVELS = {
     maxLogs: 6,
   },
   medium: {
-    title: "Medium",
-    desc: "async/await, вложенность, цепочки и ловушки",
     pool: [
       "sync", "timeout0", "micro", "qmt", "microChain", "microChain3", "finallyChain",
       "executor", "macroWithMicro", "asyncFn", "asyncIIFE", "asyncTwoAwaits", "awaitThenTimeout",
@@ -29,8 +25,6 @@ export const LEVELS = {
     maxLogs: 8,
   },
   hard: {
-    title: "Hard",
-    desc: "монструозные задачи со злых собеседований: много логов, всё вперемешку",
     pool: [
       "megaTimeout", "thenReturnThen", "asyncMega", "qmtNest", "awaitTimeoutCombo",
       "microMacroMicro", "timeoutMicroThenMacro", "executorFull",
@@ -50,19 +44,15 @@ export const LEVELS = {
 
 export const THEMES = {
   all: {
-    title: "Все темы",
     blocks: null,
   },
   microtasks: {
-    title: "Микрозадачи",
     blocks: ["micro", "qmt", "microChain", "microChain3", "finallyChain", "microWithMacro", "microMacroSandwich", "qmtNest", "thenReturnThen", "microMacroMicro", "timeoutChainMicro", "executorFull"],
   },
   timers: {
-    title: "Таймеры",
     blocks: ["timeout0", "timeoutSlow", "timeoutTwo", "nestedTimeout", "doubleNestedTimeout", "macroWithMicro", "microWithMacro", "awaitThenTimeout", "timeoutChainMicro", "executorTimeout", "microMacroSandwich", "megaTimeout", "microMacroMicro", "timeoutMicroThenMacro", "awaitTimeoutCombo"],
   },
   async: {
-    title: "async / await",
     blocks: ["asyncFn", "asyncIIFE", "asyncTwoAwaits", "awaitThenTimeout", "asyncMega", "awaitTimeoutCombo"],
   },
 };

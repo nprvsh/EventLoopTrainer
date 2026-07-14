@@ -1,12 +1,44 @@
 <!doctype html>
-<html lang="en">
+<html lang="ru">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#14161F" />
-    <meta name="description" content="Event Loop trainer: predict the console.log order for synchronous code, microtasks, and timers." />
+    <meta name="description" content="Интерактивный тренажёр JavaScript Event Loop: синхронный код, микрозадачи, таймеры и async/await. Предсказывайте порядок console.log и изучайте визуализацию очередей." />
+    <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1" />
+    <link rel="canonical" href="https://eventloop.lol/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Event Loop Trainer" />
+    <meta property="og:locale" content="ru_RU" />
+    <meta property="og:title" content="JavaScript Event Loop Trainer" />
+    <meta property="og:description" content="Практикуйтесь с синхронным кодом, микрозадачами, таймерами и async/await в интерактивном тренажёре." />
+    <meta property="og:url" content="https://eventloop.lol/" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="JavaScript Event Loop Trainer" />
+    <meta name="twitter:description" content="Интерактивная практика JavaScript Event Loop: microtasks, timers и async/await." />
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%9F%B3%3C/text%3E%3C/svg%3E" />
-    <title>Event Loop Training</title>
+    <title>JavaScript Event Loop Trainer — микрозадачи, таймеры, async/await</title>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "LearningResource",
+        "name": "JavaScript Event Loop Trainer",
+        "description": "Интерактивный тренажёр по JavaScript Event Loop: порядок выполнения синхронного кода, микрозадач, таймеров и async/await.",
+        "url": "https://eventloop.lol/",
+        "inLanguage": ["ru", "en"],
+        "learningResourceType": "Interactive exercise",
+        "educationalLevel": ["Beginner", "Intermediate", "Advanced"],
+        "about": [
+          "JavaScript Event Loop",
+          "Microtasks",
+          "Macrotasks",
+          "Promises",
+          "async/await",
+          "setTimeout"
+        ],
+        "isAccessibleForFree": true
+      }
+    </script>
     <script>
       const colorTheme = localStorage.getItem("event-loop-trainer:color-theme");
       if (["midnight", "ocean", "forest", "rose"].includes(colorTheme)) document.documentElement.dataset.colorTheme = colorTheme;
@@ -16,7 +48,24 @@
     <style>body { margin: 0; }</style>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <main>
+        <h1>JavaScript Event Loop Trainer</h1>
+        <p>Интерактивный тренажёр, который помогает понять порядок выполнения JavaScript-кода: синхронные вызовы, микрозадачи, таймеры и async/await.</p>
+        <h2>Как тренироваться</h2>
+        <ol>
+          <li>Выберите сложность и тему задачи.</li>
+          <li>Предскажите порядок значений из console.log.</li>
+          <li>Проверьте ответ и изучите пошаговую визуализацию Call Stack, Microtask Queue и Task Queue.</li>
+        </ol>
+        <h2>Темы</h2>
+        <p>Promise.then, Promise.finally, queueMicrotask, setTimeout, async/await, вложенные колбэки и очереди задач.</p>
+        <p lang="en">Practice JavaScript event loop execution order with synchronous code, microtasks, timers, Promises, and async/await.</p>
+      </main>
+    </div>
+    <noscript>
+      <p>This interactive trainer requires JavaScript to generate exercises and display the event-loop visualization.</p>
+    </noscript>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

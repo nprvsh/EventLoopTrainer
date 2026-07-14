@@ -21,9 +21,9 @@ export default function LevelSelector({ level, theme, onLevelChange, onThemeChan
       <div className={s.section}>
         <span className={s.label}>{strings.levelSelector.level}</span>
         <div className={s.group} aria-label={strings.levelSelector.level}>
-          {Object.entries(LEVELS).map(([key, config]) => (
+          {Object.keys(LEVELS).map((key) => (
             <button key={key} className={`${controls.btn} ${level === key ? controls.btnActive : ""}`} onClick={() => onLevelChange(key as LevelKey)} title={strings.levels[key as LevelKey].description}>
-              {config.title}
+              {strings.levels[key as LevelKey].label}
             </button>
           ))}
         </div>

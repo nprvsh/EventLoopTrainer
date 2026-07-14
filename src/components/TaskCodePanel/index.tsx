@@ -6,12 +6,13 @@ import s from "./TaskCodePanel.module.css";
 
 type TaskCodePanelProps = {
   task: Task | null;
+  loadError?: boolean;
   activeLine?: number | null;
   activeLineState?: CodeLineState | null;
   onQueueEntry?: (line: number, bounds: DOMRect) => void;
 }
 
-export default function TaskCodePanel({ task, activeLine = null, activeLineState = null, onQueueEntry }: TaskCodePanelProps) {
+export default function TaskCodePanel({ task, loadError = false, activeLine = null, activeLineState = null, onQueueEntry }: TaskCodePanelProps) {
   const strings = useStrings();
   const codeBodyRef = useRef<HTMLDivElement>(null);
   const hasActiveLine = activeLine !== null && activeLineState !== null;
@@ -28,11 +29,13 @@ export default function TaskCodePanel({ task, activeLine = null, activeLineState
   }, [activeLine, activeLineState, onQueueEntry]);
 
   return (
-    <div className={s.codePanel}>
+    <div className={s.codePanel} data-code-panel>
       <div className={s.codeHeader}><span className={s.dot} /><span className={s.dot} /><span className={s.dot} /><span className={s.fileName}>{strings.taskCodePanel.fileName}</span></div>
       <div ref={codeBodyRef} className={s.codeBody}>
         {hasActiveLine && <div className={`${s.lineHighlight} ${highlightClass}`} style={highlightStyle} />}
-        {task ? task.lines.map((line, index) => highlightLine(line, index)) : <div className={s.loading}>{strings.taskCodePanel.loading}</div>}
+        {task
+          ? task.lines.map((line, index) => highlightLine(line, index))
+          : <div className={s.loading}>{loadError ? strings.taskCodePanel.generationFailed : strings.taskCodePanel.loading}</div>}
       </div>
     </div>
   );

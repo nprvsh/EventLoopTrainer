@@ -1,4 +1,6 @@
 .codePanel {
+  display: flex;
+  flex-direction: column;
   background: var(--panel);
   border: 1px solid var(--panel-edge);
   border-radius: 12px;
@@ -28,9 +30,10 @@
 
 .codeBody {
   position: relative;
+  flex: 1;
   padding: 16px 18px;
   font-size: 13.5px;
-  overflow-x: auto;
+  overflow: auto;
 }
 
 .loading {

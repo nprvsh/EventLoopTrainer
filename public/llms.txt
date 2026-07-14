@@ -1,0 +1,27 @@
+# JavaScript Event Loop Trainer
+
+> A free, interactive JavaScript Event Loop trainer available in Russian and English.
+
+## Purpose
+
+Practice predicting the order of `console.log` output and learn how the JavaScript runtime processes synchronous code, the microtask queue, and the task (macrotask) queue.
+
+## Topics
+
+- Synchronous JavaScript execution and the call stack
+- `Promise.then()` and `Promise.finally()`
+- `queueMicrotask()`
+- `setTimeout()`
+- `async` / `await`
+- Nested callbacks and the order in which queues are drained
+
+## How it works
+
+The trainer generates exercises at Easy, Medium, and Hard difficulty levels. A learner selects the expected output order, checks the answer, and can review a textual explanation plus a step-by-step visualization of the call stack, microtask queue, task queue, and console.
+
+## Access
+
+- App: https://eventloop.lol/
+- Source repository: https://github.com/nprvsh/EventLoopTrainer
+
+The application is free to use and does not require an account.

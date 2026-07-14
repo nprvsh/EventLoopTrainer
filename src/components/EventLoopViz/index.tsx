@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useReducer, useState } from "react";
 import { useStrings } from "@/config/strings";
 import { buildSim } from "@/lib";
 import type { CodeLineState, SimulationStep, Task } from "@/types";
@@ -21,6 +21,137 @@ type EventLoopVizProps = {
   onStepChange?: (codeLine: number | null, codeLineState: CodeLineState | null) => void;
 };
 
+type EventLoopVizIdleProps = {
+  message: string;
+};
+
+type QueueChipState = {
+  label: string;
+  state: "entering" | "idle" | "leaving";
+};
+
+type AnimatedQueueChipsProps = {
+  groups: string[];
+  tone: string;
+  emptyLabel: string;
+};
+
+type QueueChipAction =
+  | { type: "sync"; groups: string[] }
+  | { type: "finish"; label: string; state: QueueChipState["state"] };
+
+function queueChipsReducer(chips: QueueChipState[], action: QueueChipAction): QueueChipState[] {
+  if (action.type === "finish") {
+    return chips
+      .filter((chip) => !(chip.label === action.label && action.state === "leaving"))
+      .map((chip) => chip.label === action.label && action.state === "entering" ? { ...chip, state: "idle" } : chip);
+  }
+
+  const currentLabels = new Set(chips.map(({ label }) => label));
+  const nextLabels = new Set(action.groups);
+  const nextChips = action.groups.map((label) => {
+    const currentChip = chips.find((chip) => chip.label === label);
+    return currentChip ?? { label, state: "entering" as const };
+  });
+  const leavingChips = chips
+    .filter((chip) => !nextLabels.has(chip.label) && chip.state !== "leaving")
+    .map((chip) => ({ ...chip, state: "leaving" as const }));
+
+  if (currentLabels.size === action.groups.length && leavingChips.length === 0) return chips;
+  return [...nextChips, ...leavingChips];
+}
+
+function AnimatedQueueChips({ groups, tone, emptyLabel }: AnimatedQueueChipsProps) {
+  const [chips, dispatch] = useReducer(queueChipsReducer, groups, (initialGroups) =>
+    initialGroups.map((label) => ({ label, state: "entering" })),
+  );
+
+  useEffect(() => {
+    dispatch({ type: "sync", groups });
+  }, [groups]);
+
+  const finishAnimation = (label: string, state: QueueChipState["state"]) => {
+    dispatch({ type: "finish", label, state });
+  };
+
+  return (
+    <>
+      {chips.map(({ label, state }) => (
+        <VizChip
+          key={label}
+          tone={tone}
+          className={`${s.chip} ${state === "entering" ? s.queueChipEnter : state === "leaving" ? s.queueChipExit : ""}`}
+          wideClassName={s.chipWide}
+          onAnimationEnd={() => state !== "idle" && finishAnimation(label, state)}
+        >
+          {label}
+        </VizChip>
+      ))}
+      {!chips.length && <span className={s.empty}>{emptyLabel}</span>}
+    </>
+  );
+}
+
+export function EventLoopVizIdle({ message }: EventLoopVizIdleProps) {
+  const strings = useStrings();
+
+  return (
+    <div className={`${s.viz} ${s.vizIdle}`} aria-disabled="true">
+      <div className={s.controls}>
+        <button className={s.ctrl} aria-label={strings.eventLoopViz.previousStep} disabled>‹</button>
+        <button className={`${s.ctrl} ${s.ctrlPlay}`} aria-label={strings.eventLoopViz.continue} disabled>▶</button>
+        <button className={s.ctrl} aria-label={strings.eventLoopViz.nextStep} disabled>›</button>
+        <span className={s.counter}>—/—</span>
+        <div className={s.reason}>
+          <span className={s.reasonLabel}>{strings.eventLoopViz.reason}</span>
+          <span className={s.note}>{message}</span>
+        </div>
+      </div>
+      <div className={s.progress}><div className={s.progressFill} /></div>
+      <div className={s.zones}>
+        <VizZone
+          title={strings.eventLoopViz.callStack}
+          tone={s.toneAmber}
+          active={false}
+          stack
+          classNames={zoneClassNames}
+        >
+          <span className={s.empty}>{strings.eventLoopViz.empty}</span>
+        </VizZone>
+        <div className={s.flow} aria-hidden="true">
+          <span className={s.flowArrow}>⇄</span>
+        </div>
+        <div className={s.queues}>
+          <VizZone
+            title={strings.eventLoopViz.microtaskQueue}
+            tone={s.toneKw}
+            active={false}
+            row
+            pendingLabel={strings.eventLoopViz.pending}
+            classNames={zoneClassNames}
+          >
+            <span className={s.empty}>—</span>
+          </VizZone>
+          <VizZone
+            title={strings.eventLoopViz.taskQueue}
+            tone={s.toneNum}
+            active={false}
+            row
+            pendingLabel={strings.eventLoopViz.pending}
+            classNames={zoneClassNames}
+          >
+            <span className={s.empty}>—</span>
+          </VizZone>
+        </div>
+      </div>
+      <div className={s.console}>
+        <span className={s.consoleLabel}>{strings.eventLoopViz.console}</span>
+        <span className={s.empty}>{strings.eventLoopViz.noOutput}</span>
+      </div>
+    </div>
+  );
+}
+
 export default function EventLoopViz({ task, onStepChange }: EventLoopVizProps) {
   const strings = useStrings();
   const steps = useMemo<SimulationStep[]>(() => buildSim(task, strings.sim) as SimulationStep[], [task, strings.sim]);
@@ -42,13 +173,6 @@ export default function EventLoopViz({ task, onStepChange }: EventLoopVizProps) 
 
   const activeCallback = step.stack[0]?.replace("callback ", "");
   const isDrainingMicrotasks = step.micro.length > 0 && step.stack.length === 0;
-  const eventLoopMessage = activeCallback
-    ? strings.eventLoopViz.callbackRunning
-    : isDrainingMicrotasks
-      ? strings.eventLoopViz.drainMicrotasks
-      : step.macro.length > 0
-        ? strings.eventLoopViz.takeMacrotask
-        : strings.eventLoopViz.waiting;
 
   const showPreviousStep = () => {
     setPlaying(false);
@@ -117,7 +241,6 @@ export default function EventLoopViz({ task, onStepChange }: EventLoopVizProps) 
         </VizZone>
         <div className={s.flow} aria-label={strings.eventLoopViz.flowAriaLabel}>
           <span className={s.flowArrow}>⇄</span>
-          <span className={s.flowCaption}>{eventLoopMessage}</span>
         </div>
         <div className={s.queues}>
           <VizZone
@@ -129,15 +252,7 @@ export default function EventLoopViz({ task, onStepChange }: EventLoopVizProps) 
             pendingLabel={strings.eventLoopViz.pending}
             classNames={zoneClassNames}
           >
-            {step.micro.length ? (
-              step.micro.map((group, groupIndex) => (
-                <VizChip key={group} tone={s.toneKw} className={s.chip} wideClassName={s.chipWide}>
-                  {groupIndex === 0 ? strings.eventLoopViz.nextQueueItem(group) : group}
-                </VizChip>
-              ))
-            ) : (
-              <span className={s.empty}>—</span>
-            )}
+            <AnimatedQueueChips groups={step.micro} tone={s.toneKw} emptyLabel="—" />
           </VizZone>
           <VizZone
             title={strings.eventLoopViz.taskQueue}
@@ -148,15 +263,7 @@ export default function EventLoopViz({ task, onStepChange }: EventLoopVizProps) 
             pendingLabel={strings.eventLoopViz.pending}
             classNames={zoneClassNames}
           >
-            {step.macro.length ? (
-              step.macro.map((group, groupIndex) => (
-                <VizChip key={group} tone={s.toneNum} className={s.chip} wideClassName={s.chipWide}>
-                  {groupIndex === 0 ? strings.eventLoopViz.nextQueueItem(group) : group}
-                </VizChip>
-              ))
-            ) : (
-              <span className={s.empty}>—</span>
-            )}
+            <AnimatedQueueChips groups={step.macro} tone={s.toneNum} emptyLabel="—" />
           </VizZone>
         </div>
       </div>

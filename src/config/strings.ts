@@ -50,6 +50,7 @@ const ru = {
   taskCodePanel: {
     fileName: "task.js",
     loading: "// собираю задачу…",
+    generationFailed: "// не удалось собрать задачу — попробуйте ещё раз",
   },
   taskExplanation: {
     title: "ПОЧЕМУ ТАКОЙ ПОРЯДОК",
@@ -71,10 +72,6 @@ const ru = {
     instruction: "НАЖИМАЙ В ТОМ ПОРЯДКЕ, В КОТОРОМ ПОЯВИТСЯ ВЫВОД",
   },
   eventLoopViz: {
-    callbackRunning: "Выполняем колбэк из очереди",
-    drainMicrotasks: "Стек пуст — очищаем microtask queue",
-    takeMacrotask: "Стек пуст — берём одну macrotask",
-    waiting: "Ожидаем работу очередей",
     previousStep: "Предыдущий шаг",
     restart: "Запустить заново",
     pause: "Пауза",
@@ -86,15 +83,14 @@ const ru = {
     flowAriaLabel: "Состояние цикла событий",
     microtaskQueue: "Microtask Queue · FIFO →",
     taskQueue: "Task Queue · FIFO →",
-    nextQueueItem: (item: string) => `следующая: ${item}`,
     console: "CONSOLE",
     noOutput: "вывода пока нет",
     pending: "ожидают",
   },
   levels: {
-    easy: { description: "синхронный код, таймеры и простые микрозадачи вперемешку" },
-    medium: { description: "async/await, вложенность, цепочки и ловушки" },
-    hard: { description: "монструозные задачи со злых собеседований: много логов, всё вперемешку" },
+    easy: { label: "Легко", description: "синхронный код, таймеры и простые микрозадачи вперемешку" },
+    medium: { label: "Средне", description: "async/await, вложенность, цепочки и ловушки" },
+    hard: { label: "Сложно", description: "монструозные задачи со злых собеседований: много логов, всё вперемешку" },
   },
   themes: {
     all: "Все темы",
@@ -173,7 +169,11 @@ const en = {
     hideExplanation: "hide explanation",
     showExplanation: "explanation",
   },
-  taskCodePanel: { fileName: "task.js", loading: "// building task…" },
+  taskCodePanel: {
+    fileName: "task.js",
+    loading: "// building task…",
+    generationFailed: "// could not build a task — try again",
+  },
   taskExplanation: {
     title: "WHY THIS ORDER",
     rule: {
@@ -188,10 +188,6 @@ const en = {
   answerConsole: { title: "Console — your prediction", remove: "remove", expected: "→ expected " },
   tokenPicker: { instruction: "CLICK IN THE ORDER THE OUTPUT WILL APPEAR" },
   eventLoopViz: {
-    callbackRunning: "Running a callback from the queue",
-    drainMicrotasks: "Stack is empty — draining the microtask queue",
-    takeMacrotask: "Stack is empty — taking one macrotask",
-    waiting: "Waiting for queued work",
     previousStep: "Previous step",
     restart: "Restart",
     pause: "Pause",
@@ -203,15 +199,14 @@ const en = {
     flowAriaLabel: "Event loop state",
     microtaskQueue: "Microtask Queue · FIFO →",
     taskQueue: "Task Queue · FIFO →",
-    nextQueueItem: (item: string) => `next: ${item}`,
     console: "CONSOLE",
     noOutput: "no output yet",
     pending: "pending",
   },
   levels: {
-    easy: { description: "synchronous code, timers, and simple microtasks mixed together" },
-    medium: { description: "async/await, nesting, chains, and traps" },
-    hard: { description: "monster interview tasks: lots of logs, all mixed together" },
+    easy: { label: "Easy", description: "synchronous code, timers, and simple microtasks mixed together" },
+    medium: { label: "Medium", description: "async/await, nesting, chains, and traps" },
+    hard: { label: "Hard", description: "monster interview tasks: lots of logs, all mixed together" },
   },
   themes: { all: "All topics", microtasks: "Microtasks", timers: "Timers", async: "async / await" },
   phases: {
