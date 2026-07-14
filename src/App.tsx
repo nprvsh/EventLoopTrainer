@@ -1,9 +1,11 @@
 import { useCallback, useEffect, useState } from "react";
 import type { CSSProperties } from "react";
+import { seoContent } from "@/config/seo";
 import { localizedStrings, StringsProvider } from "@/config/strings";
 import { generateTask } from "@/lib";
 import {
   AnswerConsole,
+  EventLoopGuide,
   EventLoopViz,
   EventLoopVizIdle,
   LevelSelector,
@@ -129,6 +131,15 @@ export default function App() {
   useEffect(() => {
     document.documentElement.lang = locale;
     localStorage.setItem(LOCALE_STORAGE_KEY, locale);
+
+    const metadata = seoContent[locale];
+    document.title = metadata.title;
+    document.querySelector('meta[name="description"]')?.setAttribute("content", metadata.description);
+    document.querySelector('meta[property="og:title"]')?.setAttribute("content", metadata.title);
+    document.querySelector('meta[property="og:description"]')?.setAttribute("content", metadata.description);
+    document.querySelector('meta[property="og:locale"]')?.setAttribute("content", metadata.ogLocale);
+    document.querySelector('meta[name="twitter:title"]')?.setAttribute("content", metadata.title);
+    document.querySelector('meta[name="twitter:description"]')?.setAttribute("content", metadata.description);
   }, [locale]);
 
   const place = (index: number) => {
@@ -199,7 +210,6 @@ export default function App() {
   }, [task]);
 
   const strings = localizedStrings[locale];
-
   return (
     <StringsProvider value={strings}>
       <div className={s.page}>
@@ -285,6 +295,7 @@ export default function App() {
           </div>
         </main>
         {task && checked && isExplanationVisible && <TaskExplanation task={task} />}
+        <EventLoopGuide locale={locale} />
       </div>
       {queueFlight && (
         <span

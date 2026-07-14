@@ -1,4 +1,5 @@
 # Event Loop Trainer ⟳
+## [eventloop.lol](https://eventloop.lol/)
 
 Интерактивный тренажёр по JavaScript Event Loop. Соберите порядок, в котором появятся вызовы `console.log`, и разберите, как синхронный код, микрозадачи и макрозадачи попадают в очереди.
 
@@ -90,4 +91,4 @@ npm run preview      # просмотр production-сборки
 
 ## Деплой
 
-Workflow GitHub Actions собирает проект при каждом пуше в `main` и публикует папку `dist` в GitHub Pages. Базовый путь сборки задан как `/EventLoopTrainer/`; если имя репозитория изменится, обновите `base` в `vite.config.js`.
+Workflow GitHub Actions собирает проект при каждом пуше в `main` и публикует папку `dist` в GitHub Pages. Сайт доступен по адресу [eventloop.lol](https://eventloop.lol/) и использует корневой базовый путь `/` в `vite.config.js`.

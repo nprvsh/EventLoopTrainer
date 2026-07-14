@@ -20,7 +20,7 @@ export default function TrainerHeader({ stats, colorTheme, onColorThemeChange, l
   ];
 
   return (
-    <div className={s.header}>
+    <header className={s.header}>
       <div>
         <div className={s.kicker}>{strings.header.kicker}</div>
         <h1 className={s.title}>{strings.header.titleBeforeConsole}<span className={s.titleFn}>console</span><span>.</span><span className={s.titleAmber}>log</span>?</h1>
@@ -58,6 +58,6 @@ export default function TrainerHeader({ stats, colorTheme, onColorThemeChange, l
         </div>
         <div className={s.stats}>{strings.header.streak} <span className={stats.streak > 0 ? s.statAccent : undefined}>{stats.streak}</span>{" · "}{strings.header.record} <span className={s.statText}>{stats.best}</span>{" · "}{strings.header.solved} {stats.solved}/{stats.total}</div>
       </div>
-    </div>
+    </header>
   );
 }
