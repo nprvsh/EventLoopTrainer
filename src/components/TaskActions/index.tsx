@@ -37,6 +37,12 @@ export default function TaskActions({
 
   return (
     <div className={s.actions}>
+      {checked && isWin && (
+        <div className={s.winBanner} role="status">
+          <span className={s.winIcon} aria-hidden="true">✦</span>
+          <span>{strings.taskActions.successHint}</span>
+        </div>
+      )}
       {!checked ? (
         <>
           <button className={s.primary} onClick={onCheck} disabled={!done}>

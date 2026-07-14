@@ -2,6 +2,8 @@
 :root {
   --bg: #10121A;
   --panel: #1E2231;
+  --panel-muted: #181C29;
+  --panel-raised: #252A3B;
   --panel-edge: #3A4159;
   --console: #090B11;
   --text: #F0F2F8;
@@ -29,6 +31,8 @@
 :root[data-color-theme="ocean"] {
   --bg: #071923;
   --panel: #0E2B3D;
+  --panel-muted: #0A2130;
+  --panel-raised: #123449;
   --panel-edge: #286078;
   --console: #031018;
   --text: #E7F7FC;
@@ -52,6 +56,8 @@
 :root[data-color-theme="forest"] {
   --bg: #101A14;
   --panel: #1C3021;
+  --panel-muted: #17281C;
+  --panel-raised: #253D2A;
   --panel-edge: #486951;
   --console: #080F0A;
   --text: #ECF7EA;
@@ -75,6 +81,8 @@
 :root[data-color-theme="rose"] {
   --bg: #20131E;
   --panel: #351F32;
+  --panel-muted: #2B1929;
+  --panel-raised: #42273D;
   --panel-edge: #754B6B;
   --console: #120912;
   --text: #FFEAF8;

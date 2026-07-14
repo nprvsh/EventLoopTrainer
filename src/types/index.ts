@@ -18,40 +18,12 @@ export type TaskLog = {
   rel?: LogRelation;
 }
 
-export type BlockContext = {
-  L: () => string;
-  F: () => string;
-}
-
-export type BlockResult = {
-  lines: string[];
-  logs: TaskLog[];
-}
-
-export type BlockFactory = (context: BlockContext) => BlockResult;
-export type BlockKey = string;
-
-export type LevelConfig = {
-  title: string;
-  desc: string;
-  pool: BlockKey[];
-  seed: BlockKey[][];
-  count: [number, number];
-  maxLogs: number;
-}
-
 export type LevelKey = "easy" | "medium" | "hard";
 
 export type ThemeKey = "all" | "microtasks" | "timers" | "async";
 
 export type ColorThemeKey = "midnight" | "ocean" | "forest" | "rose";
 export type LocaleKey = "ru" | "en";
-
-export type Snippet = {
-  code: string;
-  lines: string[];
-  logs: TaskLog[];
-}
 
 export type Task = {
   lines: string[];

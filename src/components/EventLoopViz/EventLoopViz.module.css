@@ -1,9 +1,10 @@
 .viz {
   margin-top: 16px;
-  background: var(--panel);
+  background: var(--panel-raised);
   border: 1px solid var(--panel-edge);
   border-radius: 12px;
   padding: 14px 16px;
+  box-shadow: 0 10px 24px color-mix(in srgb, var(--bg) 26%, transparent);
 }
 
 .vizIdle {

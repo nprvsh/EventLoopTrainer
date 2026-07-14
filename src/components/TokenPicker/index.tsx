@@ -13,7 +13,12 @@ export default function TokenPicker({ tokens, usedIndices, disabled, onPlace }: 
 
   return (
     <div className={s.tokens}>
-      <div className={s.tokensLabel}>{strings.tokenPicker.instruction}</div>
+      <div className={s.tokensHeading}>
+        <div className={s.tokensLabel}>{strings.tokenPicker.instruction}</div>
+        <div className={s.progress} aria-label={strings.tokenPicker.progress(usedIndices.size, tokens.length)}>
+          {usedIndices.size}/{tokens.length}
+        </div>
+      </div>
       <div className={s.tokensRow}>
         {tokens.map((token, index) => {
           const isUsed = usedIndices.has(index);

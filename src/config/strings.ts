@@ -39,7 +39,8 @@ const ru = {
     reset: "сбросить",
     retryMistakes: (count: number) => `↻ ошибки (${count})`,
     correct: "✓ Верно!",
-    incorrect: "✗ Не совсем",
+    successHint: "Отлично! Ты правильно собрал порядок вывода.",
+    incorrect: "✗ В другой раз повезёт",
     next: "Следующая →",
     retryTask: "↻ Повторить эту задачу",
     hideAnimation: "⏹ скрыть анимацию",
@@ -70,6 +71,7 @@ const ru = {
   },
   tokenPicker: {
     instruction: "НАЖИМАЙ В ТОМ ПОРЯДКЕ, В КОТОРОМ ПОЯВИТСЯ ВЫВОД",
+    progress: (selected: number, total: number) => `Выбрано ${selected} из ${total}`,
   },
   eventLoopViz: {
     previousStep: "Предыдущий шаг",
@@ -161,6 +163,7 @@ const en = {
     reset: "reset",
     retryMistakes: (count: number) => `↻ mistakes (${count})`,
     correct: "✓ Correct!",
+    successHint: "Great job! You put the output in the right order.",
     incorrect: "✗ Not quite",
     next: "Next →",
     retryTask: "↻ Retry this task",
@@ -186,7 +189,10 @@ const en = {
     },
   },
   answerConsole: { title: "Console — your prediction", remove: "remove", expected: "→ expected " },
-  tokenPicker: { instruction: "CLICK IN THE ORDER THE OUTPUT WILL APPEAR" },
+  tokenPicker: {
+    instruction: "CLICK IN THE ORDER THE OUTPUT WILL APPEAR",
+    progress: (selected: number, total: number) => `${selected} of ${total} selected`,
+  },
   eventLoopViz: {
     previousStep: "Previous step",
     restart: "Restart",

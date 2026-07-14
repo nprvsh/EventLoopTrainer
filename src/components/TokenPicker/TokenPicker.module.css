@@ -2,11 +2,30 @@
   margin: 16px 0 8px;
 }
 
+.tokensHeading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
 .tokensLabel {
   font-size: 11px;
   color: var(--faint);
-  margin-bottom: 8px;
   letter-spacing: 1px;
+}
+
+.progress {
+  flex: none;
+  padding: 3px 7px;
+  border: 1px solid color-mix(in srgb, var(--amber) 36%, var(--panel-edge));
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--amber) 10%, transparent);
+  color: var(--amber);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
 }
 
 .tokensRow {

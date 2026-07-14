@@ -1,10 +1,12 @@
 .codePanel {
   display: flex;
   flex-direction: column;
-  background: var(--panel);
+  background: var(--panel-raised);
   border: 1px solid var(--panel-edge);
   border-radius: 12px;
   overflow: hidden;
+  box-shadow: 0 10px 24px color-mix(in srgb, var(--bg) 26%, transparent);
+  min-height: 700px;
 }
 
 .codeHeader {
