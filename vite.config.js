@@ -2,14 +2,13 @@ import { defineConfig } from "vite";
 import { fileURLToPath, URL } from "node:url";
 import react from "@vitejs/plugin-react";
 
-// base должен совпадать с именем репозитория на GitHub Pages:
-// https://<user>.github.io/EventLoopTrainer/
-export default defineConfig(({ command }) => ({
+// Сайт опубликован в корне собственного домена: https://eventloop.lol/
+export default defineConfig({
   plugins: [react()],
-  base: command === "build" ? "/EventLoopTrainer/" : "/",
+  base: "/",
   resolve: {
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url)),
     },
   },
-}));
+});
