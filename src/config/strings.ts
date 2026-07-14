@@ -18,7 +18,7 @@ const ru = {
       rose: "Роза",
     },
     kicker: "event loop · тренажер",
-    titleBeforeConsole: "В каком порядке ",
+    titleBeforeConsole: "В каком порядке выполнится ",
     colorThemeAriaLabel: "Цветовая схема",
     colorThemeAriaLabelWithName: (name: string) => `Цветовая схема: ${name}`,
     languageAriaLabel: "Язык интерфейса",
