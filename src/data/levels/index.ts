@@ -1,4 +1,18 @@
-export const LEVELS = {
+import type { LevelKey, ThemeKey } from "@/types";
+import type { BlockKey } from "@/data/blocks";
+
+export type LevelConfig = {
+  /** Блоки, из которых добирается задача после гарантированных. */
+  pool: BlockKey[];
+  /** Из каждого вложенного списка гарантированно берётся один блок. */
+  seed: BlockKey[][];
+  /** Минимум и максимум блоков в задаче. */
+  count: [number, number];
+  /** Задача с большим числом логов отбрасывается и генерируется заново. */
+  maxLogs: number;
+};
+
+export const LEVELS: Record<LevelKey, LevelConfig> = {
   easy: {
     pool: ["sync", "iife", "timeout0", "timeoutSlow", "timeoutTwo", "micro", "qmt", "microChain"],
     // из каждого списка гарантированно берётся один блок → всегда микс микро + макро
@@ -42,7 +56,7 @@ export const LEVELS = {
   },
 };
 
-export const THEMES = {
+export const THEMES: Record<ThemeKey, { blocks: BlockKey[] | null }> = {
   all: {
     blocks: null,
   },

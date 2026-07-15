@@ -1,18 +1,27 @@
 import { isMicroPhase, isSyncPhase } from "@/data";
+import type { Strings } from "@/config/strings";
+import type { CodeLineState, PhaseId, SimulationStep, Task, TaskLog, VisualizationZone } from "@/types";
+
+type SimStrings = Strings["sim"];
+
+type CallbackGroup = {
+  labels: string[];
+  phase: PhaseId;
+};
 
 // ---------- симуляция для визуализации ----------
 // Строит массив «кадров» состояния: стек, очереди, консоль, подпись.
-export function buildSim(task, strings) {
-  const truthIndexByLabel = {};
+export function buildSim(task: Task, strings: SimStrings): SimulationStep[] {
+  const truthIndexByLabel: Record<string, number> = {};
   task.truth.forEach((label, index) => (truthIndexByLabel[label] = index));
-  const codeLineForLabel = (label) => {
+  const codeLineForLabel = (label: string): number | null => {
     const index = task.lines.findIndex((line) => line.includes(`'${label}'`) || line.includes(`"${label}"`));
     return index === -1 ? null : index;
   };
 
   // группы = колбэки: 'with'-дети логируются вместе с родителем
-  const callbackGroups = {}; // firstLabel -> { labels: [], phase }
-  const groupIdByLabel = {}; // label -> firstLabel
+  const callbackGroups: Record<string, CallbackGroup> = {}; // firstLabel -> группа
+  const groupIdByLabel: Record<string, string> = {}; // label -> firstLabel
   task.logs.forEach((log) => {
     if (log.parent && log.rel === "with") {
       const groupId = groupIdByLabel[log.parent];
@@ -23,16 +32,21 @@ export function buildSim(task, strings) {
       groupIdByLabel[log.label] = log.label;
     }
   });
-  const spawnedLogsByParent = {}; // parentLabel -> [{ label, rel }]
+  const spawnedLogsByParent: Record<string, TaskLog[]> = {};
   task.logs.forEach((log) => {
     if (log.parent && (log.rel === "micro" || log.rel === "macro")) {
       (spawnedLogsByParent[log.parent] = spawnedLogsByParent[log.parent] || []).push(log);
     }
   });
 
-  const state = { stack: [], micro: [], macro: [], out: [] };
-  const steps = [];
-  const captureStep = (note, highlightedZone, label = null, codeLineState = null) =>
+  const state = { stack: [] as string[], micro: [] as string[], macro: [] as string[], out: [] as string[] };
+  const steps: SimulationStep[] = [];
+  const captureStep = (
+    note: string,
+    highlightedZone: VisualizationZone | null,
+    label: string | null = null,
+    codeLineState: CodeLineState | null = null,
+  ) =>
     steps.push({
       stack: [...state.stack],
       micro: [...state.micro],
@@ -44,7 +58,7 @@ export function buildSim(task, strings) {
       hl: highlightedZone || null,
     });
 
-  const formatGroupLabels = (groupId) =>
+  const formatGroupLabels = (groupId: string) =>
     callbackGroups[groupId].labels.map((label) => `'${label}'`).join(" ");
 
   // 1. фаза скрипта
@@ -88,7 +102,7 @@ export function buildSim(task, strings) {
   captureStep(strings.scriptEnd, "stack");
 
   // выполнение группы-колбэка
-  const runGroup = (groupId, note, highlightedZone) => {
+  const runGroup = (groupId: string, note: string, highlightedZone: VisualizationZone) => {
     const group = callbackGroups[groupId];
     state.stack = [`callback ${formatGroupLabels(groupId)}`];
     state.out.push(...group.labels);
@@ -120,7 +134,10 @@ export function buildSim(task, strings) {
     state.stack = [];
   };
 
-  const takeNextGroup = (queue) => {
+  // Эталонный порядок известен из реального исполнения (task.truth), поэтому
+  // из очереди берётся группа с самым ранним фактическим выводом, а не FIFO:
+  // это защищает визуализацию от расхождений с движком.
+  const takeNextGroup = (queue: string[]): string => {
     let nextGroupIndex = 0;
     for (let index = 1; index < queue.length; index++) {
       const currentLabel = callbackGroups[queue[index]].labels[0];
