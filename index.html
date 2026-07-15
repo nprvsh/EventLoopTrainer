@@ -58,6 +58,15 @@
       const locale = localStorage.getItem("event-loop-trainer:locale");
       if (["ru", "en"].includes(locale)) document.documentElement.lang = locale;
     </script>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-FXG20J0EFS"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-FXG20J0EFS');
+  </script>
     <style>body { margin: 0; }</style>
   </head>
   <body>

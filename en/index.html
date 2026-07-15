@@ -56,6 +56,15 @@
       const colorTheme = localStorage.getItem("event-loop-trainer:color-theme");
       if (["midnight", "ocean", "forest", "rose"].includes(colorTheme)) document.documentElement.dataset.colorTheme = colorTheme;
     </script>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-FXG20J0EFS"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-FXG20J0EFS');
+  </script>
     <style>body { margin: 0; }</style>
   </head>
   <body>
