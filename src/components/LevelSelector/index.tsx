@@ -32,7 +32,8 @@ export default function LevelSelector({ level, theme, onLevelChange, onThemeChan
         <span className={s.label}>{strings.levelSelector.theme}</span>
         <div className={s.group} aria-label={strings.levelSelector.taskThemeAriaLabel}>
           {Object.entries(THEMES).map(([key, config]) => {
-            const available = !config.blocks || currentLevel.pool.some((block: string) => config.blocks.includes(block));
+            const themeBlocks = config.blocks;
+            const available = !themeBlocks || currentLevel.pool.some((block) => themeBlocks.includes(block));
             return (
               <button
                 key={key}

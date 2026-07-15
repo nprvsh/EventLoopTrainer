@@ -51,54 +51,7 @@
         "isAccessibleForFree": true
       }
     </script>
-    <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@type": "FAQPage",
-        "mainEntity": [
-          {
-            "@type": "Question",
-            "name": "Почему setTimeout с нулевой задержкой выполняется после Promise.then?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "Колбэк setTimeout попадает в очередь макрозадач, а Promise.then — в очередь микрозадач. После синхронного кода движок сначала полностью разбирает микрозадачи и только потом берёт первую макрозадачу, поэтому даже setTimeout(fn, 0) сработает позже любого уже запланированного .then."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "Что выполняется раньше: микрозадачи или макрозадачи?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "Микрозадачи. После каждой макрозадачи (и после синхронного кода) движок опустошает очередь микрозадач целиком, включая те, что были добавлены по ходу. Макрозадачи выполняются по одной за итерацию цикла событий."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "Что происходит с async-функцией после await?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "На await функция приостанавливается и возвращает управление. Код после await оборачивается в микрозадачу: он выполнится, когда завершится синхронный код и подойдёт очередь микрозадач — даже если await применён к уже завершённому промису."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "Чем queueMicrotask отличается от setTimeout?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "queueMicrotask ставит колбэк в очередь микрозадач — он выполнится сразу после текущего синхронного кода, до отрисовки и до любых таймеров. setTimeout ставит колбэк в очередь макрозадач, и он ждёт минимум одну итерацию цикла событий."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "Тренажёр бесплатный? Нужна ли регистрация?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "Да, тренажёр полностью бесплатный и работает без регистрации. Задачи генерируются в браузере, прогресс сохраняется локально. Доступны три уровня сложности и темы: промисы, таймеры, async/await."
-            }
-          }
-        ]
-      }
-    </script>
+    <!-- FAQPage JSON-LD внедряется на сборке из src/config/seo.ts (см. vite.config.ts) -->
     <script>
       const colorTheme = localStorage.getItem("event-loop-trainer:color-theme");
       if (["midnight", "ocean", "forest", "rose"].includes(colorTheme)) document.documentElement.dataset.colorTheme = colorTheme;

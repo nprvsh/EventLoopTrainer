@@ -1,13 +1,25 @@
+import type { TaskLog } from "@/types";
+
 // ---------- генератор блоков ----------
-// Каждый блок получает контекст генерации:
-// - ctx.L() возвращает следующую метку вывода: A, B, C…
-// - ctx.F() возвращает следующее имя async-функции: run1, run2…
-// и возвращает { lines: string[], logs: [{ label, phase, parent?, rel? }] }.
+// Каждый блок получает контекст генерации и возвращает строки кода
+// вместе с метаданными логов.
 //
 // Поле parent связывает запись с логом, во время которого она была создана.
 // rel: 'with'  — логируется в том же колбэке, что и parent
 //      'micro' — ставится в очередь микрозадач, когда выполняется parent
 //      'macro' — ставится в очередь задач, когда выполняется parent
+
+export type BlockContext = {
+  /** Следующая метка вывода: A, B, C… */
+  L: () => string;
+  /** Следующее имя async-функции: run1, run2… */
+  F: () => string;
+};
+
+export type CodeBlock = {
+  lines: string[];
+  logs: TaskLog[];
+};
 
 export const BLOCKS = {
   sync: (ctx) => {
@@ -461,4 +473,6 @@ export const BLOCKS = {
       ],
     };
   },
-};
+} satisfies Record<string, (ctx: BlockContext) => CodeBlock>;
+
+export type BlockKey = keyof typeof BLOCKS;

@@ -51,54 +51,7 @@
         "isAccessibleForFree": true
       }
     </script>
-    <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@type": "FAQPage",
-        "mainEntity": [
-          {
-            "@type": "Question",
-            "name": "Why does setTimeout with zero delay run after Promise.then?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "A setTimeout callback goes to the macrotask queue, while Promise.then goes to the microtask queue. After synchronous code finishes, the engine drains all microtasks before picking the first macrotask, so even setTimeout(fn, 0) fires later than any already scheduled .then."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "Which run first: microtasks or macrotasks?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "Microtasks. After every macrotask (and after synchronous code), the engine empties the entire microtask queue, including microtasks added along the way. Macrotasks run one per event loop iteration."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "What happens to an async function after await?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "At await the function pauses and yields control. The code after await is wrapped in a microtask: it runs once synchronous code finishes and the microtask queue is processed — even if you await an already resolved promise."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "How is queueMicrotask different from setTimeout?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "queueMicrotask puts a callback into the microtask queue — it runs right after the current synchronous code, before rendering and before any timers. setTimeout puts a callback into the macrotask queue, so it waits at least one event loop iteration."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "Is the trainer free? Do I need an account?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "Yes, the trainer is completely free and requires no sign-up. Exercises are generated in the browser and your progress is stored locally. There are three difficulty levels and topics covering promises, timers, and async/await."
-            }
-          }
-        ]
-      }
-    </script>
+    <!-- FAQPage JSON-LD is injected at build time from src/config/seo.ts (see vite.config.ts) -->
     <script>
       const colorTheme = localStorage.getItem("event-loop-trainer:color-theme");
       if (["midnight", "ocean", "forest", "rose"].includes(colorTheme)) document.documentElement.dataset.colorTheme = colorTheme;
