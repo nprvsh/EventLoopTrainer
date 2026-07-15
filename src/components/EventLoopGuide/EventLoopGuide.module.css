@@ -37,6 +37,25 @@
   padding-left: 20px;
 }
 
+.faq {
+  margin-top: 24px;
+}
+
+.faqItem {
+  max-width: 76ch;
+  margin-top: 10px;
+}
+
+.faqItem summary {
+  color: var(--text);
+  cursor: pointer;
+}
+
+.faqItem p {
+  margin: 8px 0 0;
+  padding-left: 18px;
+}
+
 @media (max-width: 768px) {
   .section {
     padding: 18px;

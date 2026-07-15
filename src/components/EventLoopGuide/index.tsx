@@ -25,6 +25,15 @@ export default function EventLoopGuide({ locale }: EventLoopGuideProps) {
           <p>{seo.rule}</p>
         </div>
       </div>
+      <div className={s.faq}>
+        <h3>{seo.faqTitle}</h3>
+        {seo.faq.map((item) => (
+          <details key={item.question} className={s.faqItem}>
+            <summary>{item.question}</summary>
+            <p>{item.answer}</p>
+          </details>
+        ))}
+      </div>
     </section>
   );
 }
