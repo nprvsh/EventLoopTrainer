@@ -49,6 +49,8 @@ export default function App() {
     return colorThemes.includes(savedTheme as ColorThemeKey) ? savedTheme as ColorThemeKey : "midnight";
   });
   const [locale, setLocale] = useState<LocaleKey>(() => {
+    // Ссылка на /en/ должна открывать английскую версию независимо от сохранённых настроек.
+    if (window.location.pathname.startsWith("/en")) return "en";
     const savedLocale = localStorage.getItem(LOCALE_STORAGE_KEY);
     if (savedLocale === "ru" || savedLocale === "en") return savedLocale;
     return navigator.language.toLowerCase().startsWith("ru") ? "ru" : "en";
@@ -140,6 +142,12 @@ export default function App() {
     document.querySelector('meta[property="og:locale"]')?.setAttribute("content", metadata.ogLocale);
     document.querySelector('meta[name="twitter:title"]')?.setAttribute("content", metadata.title);
     document.querySelector('meta[name="twitter:description"]')?.setAttribute("content", metadata.description);
+
+    const localePath = locale === "en" ? "/en/" : "/";
+    if (window.location.pathname !== localePath) window.history.replaceState(null, "", localePath);
+    const localeUrl = `https://eventloop.lol${localePath}`;
+    document.querySelector('link[rel="canonical"]')?.setAttribute("href", localeUrl);
+    document.querySelector('meta[property="og:url"]')?.setAttribute("content", localeUrl);
   }, [locale]);
 
   const place = (index: number) => {

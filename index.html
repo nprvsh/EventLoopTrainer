@@ -7,16 +7,28 @@
     <meta name="description" content="Интерактивный тренажёр JavaScript Event Loop: синхронный код, микрозадачи, таймеры и async/await. Предсказывайте порядок console.log и изучайте визуализацию очередей." />
     <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1" />
     <link rel="canonical" href="https://eventloop.lol/" />
+    <link rel="alternate" hreflang="ru" href="https://eventloop.lol/" />
+    <link rel="alternate" hreflang="en" href="https://eventloop.lol/en/" />
+    <link rel="alternate" hreflang="x-default" href="https://eventloop.lol/en/" />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Event Loop Trainer" />
     <meta property="og:locale" content="ru_RU" />
+    <meta property="og:locale:alternate" content="en_US" />
     <meta property="og:title" content="JavaScript Event Loop Trainer" />
     <meta property="og:description" content="Практикуйтесь с синхронным кодом, микрозадачами, таймерами и async/await в интерактивном тренажёре." />
     <meta property="og:url" content="https://eventloop.lol/" />
-    <meta name="twitter:card" content="summary" />
+    <meta property="og:image" content="https://eventloop.lol/assets/og/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="JavaScript Event Loop Trainer — интерактивный тренажёр цикла событий" />
+    <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="JavaScript Event Loop Trainer" />
     <meta name="twitter:description" content="Интерактивная практика JavaScript Event Loop: microtasks, timers и async/await." />
+    <meta name="twitter:image" content="https://eventloop.lol/assets/og/og-image.png" />
     <link rel="icon" type="image/svg+xml" sizes="32x32" href="/assets/favicon/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon/favicon-32.png" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/assets/favicon/favicon-192.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/favicon/apple-touch-icon.png" />
     <title>JavaScript Event Loop Trainer — микрозадачи, таймеры, async/await</title>
     <script type="application/ld+json">
       {
@@ -37,6 +49,54 @@
           "setTimeout"
         ],
         "isAccessibleForFree": true
+      }
+    </script>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "Почему setTimeout с нулевой задержкой выполняется после Promise.then?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Колбэк setTimeout попадает в очередь макрозадач, а Promise.then — в очередь микрозадач. После синхронного кода движок сначала полностью разбирает микрозадачи и только потом берёт первую макрозадачу, поэтому даже setTimeout(fn, 0) сработает позже любого уже запланированного .then."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Что выполняется раньше: микрозадачи или макрозадачи?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Микрозадачи. После каждой макрозадачи (и после синхронного кода) движок опустошает очередь микрозадач целиком, включая те, что были добавлены по ходу. Макрозадачи выполняются по одной за итерацию цикла событий."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Что происходит с async-функцией после await?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "На await функция приостанавливается и возвращает управление. Код после await оборачивается в микрозадачу: он выполнится, когда завершится синхронный код и подойдёт очередь микрозадач — даже если await применён к уже завершённому промису."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Чем queueMicrotask отличается от setTimeout?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "queueMicrotask ставит колбэк в очередь микрозадач — он выполнится сразу после текущего синхронного кода, до отрисовки и до любых таймеров. setTimeout ставит колбэк в очередь макрозадач, и он ждёт минимум одну итерацию цикла событий."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Тренажёр бесплатный? Нужна ли регистрация?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Да, тренажёр полностью бесплатный и работает без регистрации. Задачи генерируются в браузере, прогресс сохраняется локально. Доступны три уровня сложности и темы: промисы, таймеры, async/await."
+            }
+          }
+        ]
       }
     </script>
     <script>
@@ -60,7 +120,14 @@
         </ol>
         <h2>Темы</h2>
         <p>Promise.then, Promise.finally, queueMicrotask, setTimeout, async/await, вложенные колбэки и очереди задач.</p>
-        <p lang="en">Practice JavaScript event loop execution order with synchronous code, microtasks, timers, Promises, and async/await.</p>
+        <h2>Частые вопросы</h2>
+        <h3>Почему setTimeout с нулевой задержкой выполняется после Promise.then?</h3>
+        <p>Колбэк setTimeout попадает в очередь макрозадач, а Promise.then — в очередь микрозадач. Движок разбирает все микрозадачи до первой макрозадачи.</p>
+        <h3>Что выполняется раньше: микрозадачи или макрозадачи?</h3>
+        <p>Микрозадачи: после синхронного кода и после каждой макрозадачи их очередь опустошается целиком.</p>
+        <h3>Что происходит с async-функцией после await?</h3>
+        <p>Функция приостанавливается, а код после await выполняется как микрозадача.</p>
+        <p lang="en">Practice JavaScript event loop execution order with synchronous code, microtasks, timers, Promises, and async/await. <a href="/en/">English version</a>.</p>
       </main>
     </div>
     <noscript>

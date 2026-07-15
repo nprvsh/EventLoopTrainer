@@ -21,7 +21,8 @@ The trainer generates exercises at Easy, Medium, and Hard difficulty levels. A l
 
 ## Access
 
-- App: https://eventloop.lol/
+- App (Russian): https://eventloop.lol/
+- App (English): https://eventloop.lol/en/
 - Source repository: https://github.com/nprvsh/EventLoopTrainer
 
 The application is free to use and does not require an account.
