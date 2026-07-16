@@ -108,6 +108,30 @@
   outline-offset: 2px;
 }
 
+.donateLink {
+  margin-left: 9px;
+  padding: 4px 8px;
+  border: 1px solid var(--amber);
+  border-radius: 5px;
+  background: color-mix(in srgb, var(--amber) 12%, var(--panel));
+  color: var(--amber);
+  font-size: 11px;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background 150ms ease, color 150ms ease;
+}
+
+.donateLink:hover {
+  background: var(--amber);
+  color: var(--bg);
+}
+
+.donateLink:focus-visible {
+  outline: 2px solid var(--amber);
+  outline-offset: 3px;
+}
+
 .themeDot {
   width: 12px;
   height: 12px;
