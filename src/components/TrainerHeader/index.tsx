@@ -55,15 +55,6 @@ export default function TrainerHeader({ stats, colorTheme, onColorThemeChange, l
               </button>
             ))}
           </div>
-          <a
-            className={s.donateLink}
-            href="https://donatty.com/eventloop"
-            target="_blank"
-            rel="noreferrer"
-            title={strings.header.donateTitle}
-          >
-            {strings.header.donate}
-          </a>
         </div>
         <div className={s.stats}>{strings.header.streak} <span className={stats.streak > 0 ? s.statAccent : undefined}>{stats.streak}</span>{" · "}{strings.header.record} <span className={s.statText}>{stats.best}</span>{" · "}{strings.header.solved} {stats.solved}/{stats.total}</div>
       </div>
