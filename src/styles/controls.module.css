@@ -19,3 +19,9 @@
   background: color-mix(in srgb, var(--amber) 12%, transparent);
   color: var(--amber);
 }
+
+@media (pointer: coarse) {
+  .btn {
+    padding: 10px 14px;
+  }
+}

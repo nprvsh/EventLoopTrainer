@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { CSSProperties } from "react";
 import { localizedStrings, StringsProvider } from "@/config/strings";
 import { useColorTheme, useLocale, useTaskSession } from "@/hooks";
@@ -49,6 +49,20 @@ export default function App() {
 
   const session = useTaskSession({ level, theme, onTaskReset: resetPresentation });
   const { task, checked } = session;
+
+  const visualizationRef = useRef<HTMLElement>(null);
+  const explanationRef = useRef<HTMLDivElement>(null);
+
+  // На узких экранах панель может оказаться за пределами вьюпорта — доскролливаем к ней
+  const scrollToPanelOnMobile = (element: HTMLElement | null) => {
+    if (!element || !window.matchMedia("(max-width: 760px)").matches) return;
+    const behavior = window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
+    element.scrollIntoView({ behavior, block: "start" });
+  };
+
+  useEffect(() => {
+    if (isExplanationVisible) scrollToPanelOnMobile(explanationRef.current);
+  }, [isExplanationVisible]);
 
   const animateQueueEntry = useCallback((line: number, source: DOMRect) => {
     const target = document.querySelector<HTMLElement>('[data-queue-zone][data-active="true"]');
@@ -105,7 +119,7 @@ export default function App() {
           </section>
 
           <div className={s.rightColumn}>
-            <section className={s.visualizationColumn} aria-label={strings.app.visualizationColumnAriaLabel}>
+            <section ref={visualizationRef} className={s.visualizationColumn} aria-label={strings.app.visualizationColumnAriaLabel}>
               <h2 className={s.columnTitle}>{strings.app.visualizationColumn}</h2>
               {task && checked && isVisualizationVisible ? (
                 <EventLoopViz
@@ -137,21 +151,28 @@ export default function App() {
                   onNextTask={session.requestNewTask}
                   onRetryLastMistake={session.retryLastMistake}
                   mistakesCount={session.mistakes.length}
-                  onToggleVisualization={() => setIsVisualizationVisible((value) => {
-                    if (value) {
+                  onToggleVisualization={() => {
+                    const next = !isVisualizationVisible;
+                    if (next) {
+                      scrollToPanelOnMobile(visualizationRef.current);
+                    } else {
                       setActiveCodeLine(null);
                       setActiveCodeLineState(null);
                       setQueueFlight(null);
                     }
-                    return !value;
-                  })}
+                    setIsVisualizationVisible(next);
+                  }}
                   onToggleExplanation={() => setIsExplanationVisible((value) => !value)}
                 />
               )}
             </section>
           </div>
         </main>
-        {task && checked && isExplanationVisible && <TaskExplanation task={task} />}
+        {task && checked && isExplanationVisible && (
+          <div ref={explanationRef}>
+            <TaskExplanation task={task} />
+          </div>
+        )}
         <EventLoopGuide locale={locale} />
       </div>
       {queueFlight && (

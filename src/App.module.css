@@ -145,8 +145,31 @@
     padding: 14px;
   }
 
+  /* порядок на телефоне: код → ответ → визуализация */
   .rightColumn {
-    gap: 14px;
+    display: contents;
+  }
+
+  .rightColumn > *:last-child {
+    flex: initial;
+  }
+
+  .codeColumn {
+    order: 1;
+    min-height: 0;
+  }
+
+  .answerColumn {
+    order: 2;
+  }
+
+  .visualizationColumn {
+    order: 3;
+    scroll-margin-top: 12px;
+  }
+
+  .codeColumn [data-code-panel] {
+    min-height: 0;
   }
 
   .wrap {
