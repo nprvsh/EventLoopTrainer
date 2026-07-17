@@ -43,6 +43,12 @@
   cursor: pointer;
 }
 
+@media (pointer: coarse) {
+  .row {
+    padding: 6px 0;
+  }
+}
+
 .row:disabled {
   cursor: default;
 }

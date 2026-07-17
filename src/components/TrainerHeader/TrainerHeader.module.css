@@ -159,4 +159,30 @@
   .stats {
     text-align: left;
   }
+
+  .title {
+    font-size: 19px;
+  }
+}
+
+@media (pointer: coarse) {
+  .languageButton {
+    min-width: 36px;
+    height: 28px;
+    font-size: 11px;
+  }
+
+  .themeButton {
+    width: 28px;
+    height: 28px;
+  }
+
+  .themeDot {
+    width: 14px;
+    height: 14px;
+  }
+
+  .donateLink {
+    padding: 7px 10px;
+  }
 }

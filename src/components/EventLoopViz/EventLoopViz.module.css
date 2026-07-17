@@ -289,9 +289,31 @@
 }
 
 @media (max-width: 620px) {
+  .viz {
+    padding: 12px;
+  }
+
   .flow {
     width: 100%;
-    min-height: 48px;
+    min-height: 30px;
+  }
+
+  /* зоны складываются в столбик — стрелка указывает вниз/вверх */
+  .flowArrow {
+    transform: rotate(90deg);
+    animation-name: flowPulseRotated;
+  }
+}
+
+@keyframes flowPulseRotated {
+  50% { transform: rotate(90deg) scale(1.14); opacity: 0.66; }
+}
+
+@media (pointer: coarse) {
+  .ctrl {
+    width: 44px;
+    height: 38px;
+    font-size: 15px;
   }
 }
 
